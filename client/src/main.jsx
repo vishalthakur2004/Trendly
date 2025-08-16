@@ -53,7 +53,7 @@ const initializeApp = () => {
         >
           <BrowserRouter>
            <Provider store={store}>
-              <App />
+              <ClerkWrapper />
            </Provider>
           </BrowserRouter>
         </SafeClerkProvider>
