@@ -1,0 +1,24 @@
+<svg viewBox="0 0 200 60" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#8B5CF6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#F97316;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Logo icon (trending arrow) -->
+  <g transform="translate(10, 10)">
+    <rect width="40" height="40" rx="12" fill="url(#logoGradient)" />
+    <path d="M28 16 L24 20 L20 16 M24 20 L24 12 M16 24 L20 20 L24 20 L28 24" 
+          stroke="white" 
+          stroke-width="2.5" 
+          stroke-linecap="round" 
+          stroke-linejoin="round" 
+          fill="none" />
+  </g>
+  
+  <!-- Text "Trendly" -->
+  <text x="60" y="42" font-family="Arial, sans-serif" font-size="28" font-weight="bold" fill="#2D1B69">
+    Trendly
+  </text>
+</svg>
