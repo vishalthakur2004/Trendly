@@ -1,4 +1,19 @@
-<svg width="33" height="40" viewBox="0 0 33 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M0.0619184 17.0601L20.2432 0.000228012L12.4475 30.7521L12.1408 19.8491L0.0619184 17.0601Z" fill="#4F39F6"/>
-<path d="M13.798 13.2924L27.9439 17.5243L7.23363 35.2052L7.23841 35.2095L13.798 13.2924Z" fill="#4F39F6"/>
+<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="faviconGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#8B5CF6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#F97316;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background rounded rectangle -->
+  <rect width="64" height="64" rx="16" fill="url(#faviconGradient)" />
+  
+  <!-- Trending arrow icon -->
+  <path d="M44 20 L36 28 L28 20 M36 28 L36 16 M20 36 L28 28 L36 28 L44 36" 
+        stroke="white" 
+        stroke-width="3" 
+        stroke-linecap="round" 
+        stroke-linejoin="round" 
+        fill="none" />
 </svg>
