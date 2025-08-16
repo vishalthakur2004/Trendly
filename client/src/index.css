@@ -1,10 +1,66 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 @import "tailwindcss";
 
+:root {
+  /* Trendly Brand Colors */
+  --trendly-primary: #22c55e;
+  --trendly-primary-dark: #16a34a;
+  --trendly-secondary: #8b5cf6;
+  --trendly-accent: #f97316;
+  --trendly-gradient: linear-gradient(135deg, #8b5cf6 0%, #f97316 100%);
+
+  /* UI Colors */
+  --trendly-bg: #fafafa;
+  --trendly-bg-secondary: #ffffff;
+  --trendly-text: #1f2937;
+  --trendly-text-muted: #6b7280;
+  --trendly-border: #e5e7eb;
+  --trendly-border-hover: #d1d5db;
+}
+
 *{
-  font-family: "Outfit", sans-serif;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 .no-scrollbar::-webkit-scrollbar{
   display: none;
+}
+
+.trendly-gradient {
+  background: var(--trendly-gradient);
+}
+
+.trendly-btn-primary {
+  background: var(--trendly-primary);
+  color: white;
+  border-radius: 12px;
+  padding: 10px 20px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.trendly-btn-primary:hover {
+  background: var(--trendly-primary-dark);
+  transform: translateY(-1px);
+}
+
+.trendly-card {
+  background: var(--trendly-bg-secondary);
+  border: 1px solid var(--trendly-border);
+  border-radius: 16px;
+  padding: 20px;
+}
+
+.trendly-input {
+  border: 1px solid var(--trendly-border);
+  border-radius: 12px;
+  padding: 12px 16px;
+  background: var(--trendly-bg-secondary);
+  transition: border-color 0.2s ease;
+}
+
+.trendly-input:focus {
+  outline: none;
+  border-color: var(--trendly-primary);
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
 }
