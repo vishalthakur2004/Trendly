@@ -6,18 +6,38 @@ import tailwindcss from '@tailwindcss/vite'
 export default defineConfig({
   plugins: [
     react({
-      // Disable fast refresh for development to prevent double mounting issues
+      // More aggressive settings to prevent Clerk issues
       fastRefresh: false,
+      include: "**/*.{jsx,tsx}",
+      babel: {
+        plugins: [],
+      },
     }),
     tailwindcss(),
   ],
   server: {
     hmr: {
-      overlay: false, // Disable error overlay that can interfere with Clerk
+      overlay: false,
+      clientPort: 5173,
     },
+    cors: true,
   },
   define: {
-    // Ensure process.env is available for Clerk
     'process.env': {},
+    global: 'globalThis',
+  },
+  optimizeDeps: {
+    exclude: ['@clerk/clerk-react'],
+    include: ['react', 'react-dom'],
+  },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom'],
+          clerk: ['@clerk/clerk-react'],
+        },
+      },
+    },
   },
 })
