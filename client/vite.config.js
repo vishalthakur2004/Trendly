@@ -5,10 +5,7 @@ import tailwindcss from '@tailwindcss/vite'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
-    react({
-      // Simplified React configuration
-      fastRefresh: false,
-    }),
+    react(),
     tailwindcss(),
   ],
   server: {
@@ -18,22 +15,5 @@ export default defineConfig({
   },
   define: {
     global: 'globalThis',
-  },
-  optimizeDeps: {
-    // Include essential dependencies to prevent module resolution issues
-    include: [
-      'react',
-      'react-dom',
-      'react-redux',
-      '@reduxjs/toolkit',
-      'use-sync-external-store/shim',
-      '@clerk/clerk-react'
-    ],
-  },
-  resolve: {
-    alias: {
-      // Ensure proper resolution for use-sync-external-store
-      'use-sync-external-store/shim': 'use-sync-external-store/shim/index.js',
-    },
   },
 })
