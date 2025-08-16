@@ -36,11 +36,11 @@ const Feed = () => {
   },[])
 
   return !loading ? (
-    <div className='h-full overflow-y-scroll no-scrollbar py-10 xl:pr-5 flex items-start justify-center xl:gap-8'>
+    <div className='h-full overflow-y-scroll no-scrollbar py-6 xl:pr-6 flex items-start justify-center xl:gap-8 bg-gray-50'>
       {/* Stories and post list */}
-      <div>
+      <div className='w-full max-w-2xl'>
         <StoriesBar />
-        <div className='p-4 space-y-6'>
+        <div className='px-4 space-y-6 mt-6'>
           {feeds.map((post)=>(
             <PostCard key={post._id} post={post}/>
           ))}
@@ -48,12 +48,29 @@ const Feed = () => {
       </div>
 
       {/* Right Sidebar */}
-      <div className='max-xl:hidden sticky top-0'>
-        <div className='max-w-xs bg-white text-xs p-4 rounded-md inline-flex flex-col gap-2 shadow'>
-          <h3 className='text-slate-800 font-semibold'>Sponsored</h3>
-          <img src={assets.sponsored_img} className='w-75 h-50 rounded-md' alt="" />
-          <p className='text-slate-600'>Email marketing</p>
-          <p className='text-slate-400'>Supercharge your marketing with a powerful, easy-to-use platform built for results.</p>
+      <div className='max-xl:hidden sticky top-6 w-80'>
+        <div className='bg-white rounded-2xl p-6 shadow-sm border border-gray-100 mb-6'>
+          <h3 className='text-gray-900 font-semibold mb-4 text-lg'>Trending</h3>
+          <div className='space-y-4'>
+            <div className='flex items-center gap-3'>
+              <div className='w-12 h-12 bg-gradient-to-br from-purple-500 to-orange-500 rounded-xl flex items-center justify-center'>
+                <span className='text-white font-bold'>#</span>
+              </div>
+              <div>
+                <p className='font-medium text-gray-900'>#TechTrends</p>
+                <p className='text-sm text-gray-500'>15.2K posts</p>
+              </div>
+            </div>
+            <div className='flex items-center gap-3'>
+              <div className='w-12 h-12 bg-gradient-to-br from-green-500 to-blue-500 rounded-xl flex items-center justify-center'>
+                <span className='text-white font-bold'>#</span>
+              </div>
+              <div>
+                <p className='font-medium text-gray-900'>#Innovation</p>
+                <p className='text-sm text-gray-500'>8.7K posts</p>
+              </div>
+            </div>
+          </div>
         </div>
         <RecentMessages />
       </div>
