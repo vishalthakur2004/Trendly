@@ -14,68 +14,25 @@ if (!PUBLISHABLE_KEY) {
   throw new Error('Missing Publishable Key')
 }
 
-// Prevent multiple Clerk initializations
-let isClerkInitialized = false
-
-// Clerk configuration to prevent development issues
+// Simplified Clerk configuration
 const clerkOptions = {
   appearance: {
     baseTheme: undefined,
   },
-  standardBrowser: true,
-  __internal_resource_cache: new Map(),
 }
 
-// Custom ClerkProvider wrapper to handle initialization errors
-const SafeClerkProvider = ({ children, ...props }) => {
-  if (isClerkInitialized) {
-    return <div>{children}</div>
-  }
-
-  isClerkInitialized = true
-
-  return (
-    <ClerkProvider {...props}>
-      {children}
+createRoot(document.getElementById('root')).render(
+  <ErrorBoundary>
+    <ClerkProvider
+      publishableKey={PUBLISHABLE_KEY}
+      {...clerkOptions}
+      afterSignOutUrl="/"
+    >
+      <BrowserRouter>
+       <Provider store={store}>
+          <ClerkWrapper />
+       </Provider>
+      </BrowserRouter>
     </ClerkProvider>
-  )
-}
-
-// Initialize app with error handling
-const initializeApp = () => {
-  try {
-    createRoot(document.getElementById('root')).render(
-      <ErrorBoundary>
-        <SafeClerkProvider
-          publishableKey={PUBLISHABLE_KEY}
-          {...clerkOptions}
-          afterSignOutUrl="/"
-        >
-          <BrowserRouter>
-           <Provider store={store}>
-              <ClerkWrapper />
-           </Provider>
-          </BrowserRouter>
-        </SafeClerkProvider>
-      </ErrorBoundary>
-    )
-  } catch (error) {
-    console.error('Failed to initialize app:', error)
-    // Fallback initialization without Clerk
-    createRoot(document.getElementById('root')).render(
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold mb-4">Loading...</h1>
-          <p>Please refresh the page if this takes too long.</p>
-        </div>
-      </div>
-    )
-  }
-}
-
-// Add small delay to ensure DOM is ready
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initializeApp)
-} else {
-  setTimeout(initializeApp, 100)
-}
+  </ErrorBoundary>
+)
