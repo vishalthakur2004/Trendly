@@ -6,38 +6,34 @@ import tailwindcss from '@tailwindcss/vite'
 export default defineConfig({
   plugins: [
     react({
-      // More aggressive settings to prevent Clerk issues
+      // Simplified React configuration
       fastRefresh: false,
-      include: "**/*.{jsx,tsx}",
-      babel: {
-        plugins: [],
-      },
     }),
     tailwindcss(),
   ],
   server: {
     hmr: {
       overlay: false,
-      clientPort: 5173,
     },
-    cors: true,
   },
   define: {
-    'process.env': {},
     global: 'globalThis',
   },
   optimizeDeps: {
-    exclude: ['@clerk/clerk-react'],
-    include: ['react', 'react-dom'],
+    // Include essential dependencies to prevent module resolution issues
+    include: [
+      'react',
+      'react-dom',
+      'react-redux',
+      '@reduxjs/toolkit',
+      'use-sync-external-store/shim',
+      '@clerk/clerk-react'
+    ],
   },
-  build: {
-    rollupOptions: {
-      output: {
-        manualChunks: {
-          vendor: ['react', 'react-dom'],
-          clerk: ['@clerk/clerk-react'],
-        },
-      },
+  resolve: {
+    alias: {
+      // Ensure proper resolution for use-sync-external-store
+      'use-sync-external-store/shim': 'use-sync-external-store/shim/index.js',
     },
   },
 })
