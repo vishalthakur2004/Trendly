@@ -211,6 +211,7 @@ const App = () => {
           <Route path='profile/:profileId' element={<Profile/>}/>
           <Route path='create-post' element={<CreatePost/>}/>
           <Route path='call-history' element={<CallHistory/>}/>
+          <Route path='groups' element={<Groups/>}/>
         </Route>
       </Routes>
 
