@@ -8,5 +8,6 @@ const storyRouter = express.Router()
 
 storyRouter.post('/create', upload.single('media'), protect, addUserStory)
 storyRouter.get('/get', protect, getStories)
+storyRouter.post('/share-post', protect, sharePostToStory)
 
 export default storyRouter
