@@ -23,6 +23,8 @@ import {
   setCallActive,
   setCallStatus,
   setParticipants,
+  addParticipant,
+  removeParticipant,
   endCall as endCallAction
 } from './features/calls/callsSlice'
 import Notification from './components/Notification'

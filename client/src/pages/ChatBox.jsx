@@ -12,6 +12,8 @@ import socketService from '../services/socketService'
 const ChatBox = () => {
 
   const {messages} = useSelector((state)=>state.messages)
+  const connections = useSelector((state) => state.connections.connections)
+  const currentUser = useSelector((state) => state.user.value)
   const { userId } = useParams()
   const { getToken } = useAuth()
   const dispatch = useDispatch()
@@ -20,8 +22,6 @@ const ChatBox = () => {
   const [image, setImage] = useState(null)
   const [user, setUser] = useState(null)
   const messagesEndRef = useRef(null)
-
-  const connections = useSelector((state) => state.connections.connections)
 
   const fetchUserMessages = async () => {
     try {
@@ -60,7 +60,6 @@ const ChatBox = () => {
   const handleStartCall = async (callType) => {
     try {
       const token = await getToken()
-      const currentUser = useSelector((state) => state.user.value)
 
       dispatch(setCallInitiating(true))
 
