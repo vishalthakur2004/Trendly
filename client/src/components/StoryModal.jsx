@@ -163,8 +163,24 @@ const StoryModal = ({setShowModal, fetchStories}) => {
                 </button>
                 <label className={`flex-1 flex items-center justify-center gap-2 p-2 rounded cursor-pointer ${mode === 'media' ? "bg-white text-black" : "bg-zinc-800"}`}>
                     <input onChange={handleMediaUpload} type="file" accept='image/*, video/*' className='hidden'/>
-                    <Upload size={18}/> Photo/Video
+                    <Upload size={18}/> Upload
                 </label>
+            </div>
+
+            {/* Camera Options */}
+            <div className='flex gap-2 mt-2'>
+                <button
+                    onClick={() => handleCameraClick('photo')}
+                    className='flex-1 flex items-center justify-center gap-2 p-2 rounded cursor-pointer bg-zinc-800 hover:bg-zinc-700 transition-colors'
+                >
+                    <Camera size={18}/> Photo
+                </button>
+                <button
+                    onClick={() => handleCameraClick('video')}
+                    className='flex-1 flex items-center justify-center gap-2 p-2 rounded cursor-pointer bg-zinc-800 hover:bg-zinc-700 transition-colors'
+                >
+                    <Camera size={18}/> Video
+                </button>
             </div>
             <button onClick={()=> toast.promise(handleCreateStory(), {
                 loading: 'Saving...',})} className='flex items-center justify-center gap-2 text-white py-3 mt-4 w-full rounded bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 active:scale-95 transition cursor-pointer'>
