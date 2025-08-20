@@ -44,9 +44,10 @@ app.use('/api/notification', notificationRouter)
 app.use('/api/call', callRouter)
 app.use('/api/group', groupRouter)
 
-// Socket.io connection handling for calls
+// Socket.io connection handling for calls and groups
 const connectedUsers = new Map(); // userId -> socketId
 const activeCalls = new Map(); // callId -> { participants: [], status: '' }
+const groupRooms = new Map(); // groupId -> Set of userIds
 
 io.on('connection', (socket) => {
     console.log('User connected:', socket.id);
