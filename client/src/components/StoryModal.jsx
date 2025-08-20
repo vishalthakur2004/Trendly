@@ -57,6 +57,40 @@ const StoryModal = ({setShowModal, fetchStories}) => {
         }
     }
 
+    const handleCameraCapture = (file) => {
+        if (file.type.startsWith("video")) {
+            // Check video duration and size
+            const video = document.createElement('video');
+            video.preload = 'metadata';
+            video.onloadedmetadata = () => {
+                window.URL.revokeObjectURL(video.src);
+                if (video.duration > MAX_VIDEO_DURATION) {
+                    toast.error("Video duration cannot exceed 1 minute.");
+                    return;
+                }
+                if (file.size > MAX_VIDEO_SIZE_MB * 1024 * 1024) {
+                    toast.error(`Video file size cannot exceed ${MAX_VIDEO_SIZE_MB}MB.`);
+                    return;
+                }
+                setMedia(file);
+                setPreviewUrl(URL.createObjectURL(file));
+                setText('');
+                setMode("media");
+            }
+            video.src = URL.createObjectURL(file);
+        } else if (file.type.startsWith("image")) {
+            setMedia(file);
+            setPreviewUrl(URL.createObjectURL(file));
+            setText('');
+            setMode("media");
+        }
+    }
+
+    const handleCameraClick = (type) => {
+        setCameraType(type);
+        setShowCamera(true);
+    }
+
     const handleCreateStory = async () => {
         const media_type = mode === 'media' ? media?.type.startsWith('image') ? 'image' : "video" : "text";
 
