@@ -3,6 +3,7 @@ import { ArrowLeft, Sparkle, TextIcon, Upload, Camera } from 'lucide-react'
 import React, { useState } from 'react'
 import toast from 'react-hot-toast'
 import api from '../api/axios'
+import CameraCapture from './CameraCapture'
 
 const StoryModal = ({setShowModal, fetchStories}) => {
 
