@@ -295,6 +295,14 @@ io.on('connection', (socket) => {
                     }
                 }
             }
+
+            // Remove user from all group rooms
+            for (const [groupId, userSet] of groupRooms.entries()) {
+                userSet.delete(socket.userId);
+                if (userSet.size === 0) {
+                    groupRooms.delete(groupId);
+                }
+            }
         }
 
         console.log('User disconnected:', socket.id);
