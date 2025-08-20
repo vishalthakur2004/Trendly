@@ -1,12 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { dummyMessagesData, dummyUserData } from '../assets/assets'
-import { ImageIcon, SendHorizonal } from 'lucide-react'
+import { ImageIcon, SendHorizonal, Phone, Video } from 'lucide-react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom'
 import { useAuth } from '@clerk/clerk-react'
 import api from '../api/axios'
 import { addMessage, fetchMessages, resetMessages } from '../features/messages/messagesSlice'
+import { initiateCall, setCallInitiating } from '../features/calls/callsSlice'
 import toast from 'react-hot-toast'
+import socketService from '../services/socketService'
 
 const ChatBox = () => {
 
@@ -56,6 +57,38 @@ const ChatBox = () => {
     }
   }
 
+  const handleStartCall = async (callType) => {
+    try {
+      const token = await getToken()
+      const currentUser = useSelector((state) => state.user.value)
+
+      dispatch(setCallInitiating(true))
+
+      // Initiate call in database
+      const result = await dispatch(initiateCall({
+        recipientId: userId,
+        callType,
+        isGroupCall: false,
+        token
+      })).unwrap()
+
+      // Send call signal via socket
+      socketService.initiateCall({
+        callId: result.call_id,
+        recipientId: userId,
+        callType,
+        initiatorData: currentUser
+      })
+
+      toast.success(`${callType} call initiated`)
+
+    } catch (error) {
+      console.error('Error starting call:', error)
+      toast.error(`Failed to start ${callType} call`)
+      dispatch(setCallInitiating(false))
+    }
+  }
+
   useEffect(()=>{
     fetchUserMessages()
 
@@ -77,11 +110,31 @@ const ChatBox = () => {
 
   return user && (
     <div className='flex flex-col h-screen'>
-      <div className='flex items-center gap-2 p-2 md:px-10 xl:pl-42 bg-gradient-to-r from-indigo-50 to-purple-50 border-b border-gray-300'>
-        <img src={user.profile_picture} alt="" className="size-8 rounded-full"/>
-        <div>
-          <p className="font-medium">{user.full_name}</p>
-          <p className="text-sm text-gray-500 -mt-1.5">@{user.username}</p>
+      <div className='flex items-center justify-between gap-2 p-2 md:px-10 xl:pl-42 bg-gradient-to-r from-indigo-50 to-purple-50 border-b border-gray-300'>
+        <div className='flex items-center gap-2'>
+          <img src={user.profile_picture} alt="" className="size-8 rounded-full"/>
+          <div>
+            <p className="font-medium">{user.full_name}</p>
+            <p className="text-sm text-gray-500 -mt-1.5">@{user.username}</p>
+          </div>
+        </div>
+
+        {/* Call Buttons */}
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => handleStartCall('voice')}
+            className="p-2 text-gray-600 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+            title="Voice Call"
+          >
+            <Phone className="w-5 h-5" />
+          </button>
+          <button
+            onClick={() => handleStartCall('video')}
+            className="p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+            title="Video Call"
+          >
+            <Video className="w-5 h-5" />
+          </button>
         </div>
       </div>
       <div className='p-5 md:px-10 h-full overflow-y-scroll'>
