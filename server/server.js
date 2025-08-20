@@ -14,6 +14,7 @@ import messageRouter from './routes/messageRoutes.js';
 import commentRouter from './routes/commentRoutes.js';
 import notificationRouter from './routes/notificationRoutes.js';
 import callRouter from './routes/callRoutes.js';
+import groupRouter from './routes/groupRoutes.js';
 
 const app = express();
 const server = createServer(app);
