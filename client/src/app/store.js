@@ -18,7 +18,8 @@ export const store = configureStore({
        posts: postsReducer,
        notifications: notificationsReducer,
        calls: callsReducer,
-       groups: groupsReducer
+       groups: groupsReducer,
+       groupPosts: groupPostsReducer
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware({
