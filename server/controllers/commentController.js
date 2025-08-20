@@ -1,5 +1,7 @@
 import Comment from "../models/Comment.js";
 import Post from "../models/Post.js";
+import User from "../models/User.js";
+import { createNotification, generateNotificationContent } from "./notificationController.js";
 
 // Add Comment
 export const addComment = async (req, res) => {
@@ -46,7 +48,39 @@ export const addComment = async (req, res) => {
 
         // Populate user data
         await comment.populate('user');
-        
+
+        // Create notifications
+        const commenter = await User.findById(userId);
+        if (commenter) {
+            if (parentCommentId) {
+                // Notification for reply
+                if (parentComment.user !== userId) {
+                    await createNotification({
+                        recipient: parentComment.user,
+                        sender: userId,
+                        type: 'reply',
+                        content: generateNotificationContent('reply', commenter.full_name),
+                        related_post: postId,
+                        related_comment: comment._id,
+                        action_url: `/feed?post=${postId}&comment=${comment._id}`
+                    });
+                }
+            } else {
+                // Notification for comment
+                if (post.user !== userId) {
+                    await createNotification({
+                        recipient: post.user,
+                        sender: userId,
+                        type: 'comment',
+                        content: generateNotificationContent('comment', commenter.full_name),
+                        related_post: postId,
+                        related_comment: comment._id,
+                        action_url: `/feed?post=${postId}&comment=${comment._id}`
+                    });
+                }
+            }
+        }
+
         res.json({ success: true, message: "Comment added successfully", comment });
     } catch (error) {
         console.log(error);
@@ -137,6 +171,22 @@ export const likeComment = async (req, res) => {
             // Like comment
             comment.likes.push(userId);
             await comment.save();
+
+            // Create notification for comment like
+            if (comment.user !== userId) {
+                const liker = await User.findById(userId);
+                if (liker) {
+                    await createNotification({
+                        recipient: comment.user,
+                        sender: userId,
+                        type: 'comment_like',
+                        content: generateNotificationContent('comment_like', liker.full_name),
+                        related_comment: comment._id,
+                        action_url: `/feed?comment=${comment._id}`
+                    });
+                }
+            }
+
             res.json({ success: true, message: "Comment liked" });
         }
     } catch (error) {

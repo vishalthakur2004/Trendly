@@ -3,6 +3,7 @@ import imagekit from "../configs/imageKit.js";
 import Post from "../models/Post.js";
 import User from "../models/User.js";
 import Message from "../models/Message.js";
+import { createNotification, generateNotificationContent } from "./notificationController.js";
 
 // Add Post
 export const addPost = async (req, res) => {
@@ -85,6 +86,22 @@ export const likePost = async (req, res) =>{
         }else{
             post.likes_count.push(userId)
             await post.save()
+
+            // Create notification for post like
+            if (post.user !== userId) {
+                const liker = await User.findById(userId);
+                if (liker) {
+                    await createNotification({
+                        recipient: post.user,
+                        sender: userId,
+                        type: 'like',
+                        content: generateNotificationContent('like', liker.full_name),
+                        related_post: post._id,
+                        action_url: `/feed?post=${post._id}`
+                    });
+                }
+            }
+
             res.json({ success: true, message: 'Post liked' });
         }
 
