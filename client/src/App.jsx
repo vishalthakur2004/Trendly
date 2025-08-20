@@ -8,6 +8,7 @@ import Connections from './pages/Connections'
 import Discover from './pages/Discover'
 import Profile from './pages/Profile'
 import CreatePost from './pages/CreatePost'
+import Notifications from './pages/Notifications'
 import {useUser, useAuth} from '@clerk/clerk-react'
 import Layout from './pages/Layout'
 import toast, {Toaster} from 'react-hot-toast'
@@ -73,6 +74,7 @@ const App = () => {
           <Route path='messages/:userId' element={<ChatBox/>}/>
           <Route path='connections' element={<Connections/>}/>
           <Route path='discover' element={<Discover/>}/>
+          <Route path='notifications' element={<Notifications/>}/>
           <Route path='profile' element={<Profile/>}/>
           <Route path='profile/:profileId' element={<Profile/>}/>
           <Route path='create-post' element={<CreatePost/>}/>
