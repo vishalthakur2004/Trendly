@@ -16,6 +16,17 @@ import {
     deleteGroup
 } from '../controllers/groupController.js';
 
+import {
+    createGroupPost,
+    getGroupPosts,
+    getPendingPosts,
+    moderatePost,
+    toggleLikeGroupPost,
+    togglePinPost,
+    deleteGroupPost,
+    voteOnPoll
+} from '../controllers/groupPostController.js';
+
 const groupRouter = express.Router();
 
 // Group management routes
