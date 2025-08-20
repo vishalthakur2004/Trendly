@@ -1,40 +1,80 @@
 import React, { useState } from 'react'
 import { BadgeCheck, Heart, MessageCircle, Share2 } from 'lucide-react'
 import moment from 'moment'
-import { dummyUserData } from '../assets/assets'
 import { useNavigate } from 'react-router-dom'
 import { useSelector } from 'react-redux';
 import { useAuth } from '@clerk/clerk-react'
 import api from '../api/axios'
 import toast from 'react-hot-toast'
+import CommentsSection from './CommentsSection'
+import ShareModal from './ShareModal'
 
 const PostCard = ({post}) => {
 
     const postWithHashtags = post.content.replace(/(#\w+)/g, '<span class="text-indigo-600">$1</span>')
     const [likes, setLikes] = useState(post.likes_count)
-    const currentUser = useSelector((state) => state.user.value)
+    const [commentsCount, setCommentsCount] = useState(post.comments_count || 0)
+    const [sharesCount, setSharesCount] = useState(post.shares_count || 0)
+    const [showComments, setShowComments] = useState(false)
+    const [showShareModal, setShowShareModal] = useState(false)
+    const [isLiking, setIsLiking] = useState(false)
 
+    const currentUser = useSelector((state) => state.user.value)
     const { getToken } = useAuth()
 
     const handleLike = async () => {
-        try {
-            const { data } = await api.post(`/api/post/like`, {postId: post._id}, {headers: { Authorization: `Bearer ${await getToken()}` }})
+        if (isLiking) return; // Prevent double clicks
 
-            if (data.success){
-               toast.success(data.message) 
-               setLikes(prev =>{
-                if(prev.includes(currentUser._id)){
-                    return prev.filter(id=> id !== currentUser._id)
-                }else{
-                    return [...prev, currentUser._id]
-                }
-               })
-            }else{
-                toast(data.message)
+        setIsLiking(true);
+        const wasLiked = likes.includes(currentUser._id);
+
+        // Optimistic update
+        setLikes(prev => {
+            if (prev.includes(currentUser._id)) {
+                return prev.filter(id => id !== currentUser._id)
+            } else {
+                return [...prev, currentUser._id]
+            }
+        });
+
+        try {
+            const { data } = await api.post(`/api/post/like`,
+                { postId: post._id },
+                { headers: { Authorization: `Bearer ${await getToken()}` } }
+            );
+
+            if (!data.success) {
+                // Revert optimistic update on failure
+                setLikes(prev => {
+                    if (wasLiked) {
+                        return [...prev, currentUser._id]
+                    } else {
+                        return prev.filter(id => id !== currentUser._id)
+                    }
+                });
+                toast.error(data.message || 'Failed to like post');
             }
         } catch (error) {
-            toast.error(error.message)
+            // Revert optimistic update on error
+            setLikes(prev => {
+                if (wasLiked) {
+                    return [...prev, currentUser._id]
+                } else {
+                    return prev.filter(id => id !== currentUser._id)
+                }
+            });
+            toast.error(error.response?.data?.message || 'Failed to like post. Please try again.');
+        } finally {
+            setIsLiking(false);
         }
+    }
+
+    const handleCommentsClick = () => {
+        setShowComments(true);
+    }
+
+    const handleShareClick = () => {
+        setShowShareModal(true);
     }
 
     const navigate = useNavigate()
@@ -64,20 +104,47 @@ const PostCard = ({post}) => {
 
         {/* Actions */}
         <div className='flex items-center gap-4 text-gray-600 text-sm pt-2 border-t border-gray-300'>
-            <div className='flex items-center gap-1'>
-                <Heart className={`w-4 h-4 cursor-pointer ${likes.includes(currentUser._id) && 'text-red-500 fill-red-500'}`} onClick={handleLike}/>
+            <button
+                onClick={handleLike}
+                disabled={isLiking}
+                className={`flex items-center gap-1 hover:text-red-500 transition-colors ${
+                    likes.includes(currentUser._id) ? 'text-red-500' : ''
+                } ${isLiking ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+            >
+                <Heart className={`w-4 h-4 ${likes.includes(currentUser._id) ? 'fill-red-500' : ''}`} />
                 <span>{likes.length}</span>
-            </div>
-            <div className='flex items-center gap-1'>
-                <MessageCircle className="w-4 h-4"/>
-                <span>{12}</span>
-            </div>
-            <div className='flex items-center gap-1'>
-                <Share2 className="w-4 h-4"/>
-                <span>{7}</span>
-            </div>
+            </button>
 
+            <button
+                onClick={handleCommentsClick}
+                className='flex items-center gap-1 hover:text-blue-500 transition-colors cursor-pointer'
+            >
+                <MessageCircle className="w-4 h-4"/>
+                <span>{commentsCount}</span>
+            </button>
+
+            <button
+                onClick={handleShareClick}
+                className='flex items-center gap-1 hover:text-green-500 transition-colors cursor-pointer'
+            >
+                <Share2 className="w-4 h-4"/>
+                <span>{sharesCount}</span>
+            </button>
         </div>
+
+        {/* Comments Section Modal */}
+        <CommentsSection
+            postId={post._id}
+            isOpen={showComments}
+            onClose={() => setShowComments(false)}
+        />
+
+        {/* Share Modal */}
+        <ShareModal
+            postId={post._id}
+            isOpen={showShareModal}
+            onClose={() => setShowShareModal(false)}
+        />
 
 
     </div>
