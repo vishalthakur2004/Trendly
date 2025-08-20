@@ -1,21 +1,52 @@
 import Call from "../models/Call.js";
 import User from "../models/User.js";
+import Group from "../models/Group.js";
 import { createNotification, generateNotificationContent } from "./notificationController.js";
 
 // Initiate a call
 export const initiateCall = async (req, res) => {
     try {
         const { userId } = req.auth();
-        const { recipientId, callType, isGroupCall = false } = req.body;
+        const { recipientId, callType, isGroupCall = false, groupId = null } = req.body;
 
-        if (!recipientId || !callType) {
-            return res.json({ success: false, message: "Recipient ID and call type are required" });
+        if (!callType) {
+            return res.json({ success: false, message: "Call type is required" });
         }
 
-        // Check if recipient exists
-        const recipient = await User.findById(recipientId);
-        if (!recipient) {
-            return res.json({ success: false, message: "Recipient not found" });
+        let participants = [];
+        let callName = '';
+
+        if (groupId) {
+            // Group call
+            const group = await Group.findById(groupId);
+            if (!group || !group.is_active) {
+                return res.json({ success: false, message: "Group not found" });
+            }
+
+            // Check if user is a member and calling is allowed
+            if (!group.isMember(userId)) {
+                return res.json({ success: false, message: "You are not a member of this group" });
+            }
+
+            if (!group.settings.allow_member_calls && !group.isAdmin(userId) && !group.isModerator(userId)) {
+                return res.json({ success: false, message: "Group calls are not allowed" });
+            }
+
+            // Get all group members except initiator
+            participants = group.members
+                .filter(member => member.user.toString() !== userId)
+                .map(member => member.user);
+
+            callName = group.name;
+        } else if (recipientId) {
+            // Direct call
+            const recipient = await User.findById(recipientId);
+            if (!recipient) {
+                return res.json({ success: false, message: "Recipient not found" });
+            }
+            participants = [recipientId];
+        } else {
+            return res.json({ success: false, message: "Recipient ID or Group ID is required" });
         }
 
         // Generate unique call ID
@@ -25,29 +56,38 @@ export const initiateCall = async (req, res) => {
         const call = await Call.create({
             call_id: callId,
             initiator: userId,
-            participants: [recipientId],
+            participants: participants,
             call_type: callType,
-            is_group_call: isGroupCall,
+            is_group_call: groupId ? true : isGroupCall,
+            group_id: groupId,
             status: 'initiated'
         });
 
         // Populate call data
         await call.populate('initiator participants');
 
-        // Create notification for recipient
+        // Create notifications for participants
         const initiator = await User.findById(userId);
         if (initiator) {
-            await createNotification({
-                recipient: recipientId,
-                sender: userId,
-                type: 'call',
-                content: `${initiator.full_name} is calling you`,
-                metadata: { 
-                    callId, 
-                    callType,
-                    isGroupCall 
-                }
-            });
+            const notificationContent = groupId
+                ? `${initiator.full_name} started a ${callType} call in ${callName}`
+                : `${initiator.full_name} is calling you`;
+
+            for (const participantId of participants) {
+                await createNotification({
+                    recipient: participantId,
+                    sender: userId,
+                    type: groupId ? 'group_call' : 'call',
+                    content: notificationContent,
+                    metadata: {
+                        callId,
+                        callType,
+                        isGroupCall: groupId ? true : isGroupCall,
+                        groupId,
+                        groupName: callName
+                    }
+                });
+            }
         }
 
         res.json({ 

@@ -35,9 +35,13 @@ const callSchema = new mongoose.Schema({
         type: Number, 
         default: 0 
     }, // Duration in seconds
-    is_group_call: { 
-        type: Boolean, 
-        default: false 
+    is_group_call: {
+        type: Boolean,
+        default: false
+    },
+    group_id: {
+        type: String,
+        ref: 'Group'
     }
 }, { 
     timestamps: true, 

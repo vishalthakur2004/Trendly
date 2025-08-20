@@ -14,6 +14,7 @@ import messageRouter from './routes/messageRoutes.js';
 import commentRouter from './routes/commentRoutes.js';
 import notificationRouter from './routes/notificationRoutes.js';
 import callRouter from './routes/callRoutes.js';
+import groupRouter from './routes/groupRoutes.js';
 
 const app = express();
 const server = createServer(app);
@@ -41,10 +42,12 @@ app.use('/api/message', messageRouter)
 app.use('/api/comment', commentRouter)
 app.use('/api/notification', notificationRouter)
 app.use('/api/call', callRouter)
+app.use('/api/group', groupRouter)
 
-// Socket.io connection handling for calls
+// Socket.io connection handling for calls and groups
 const connectedUsers = new Map(); // userId -> socketId
 const activeCalls = new Map(); // callId -> { participants: [], status: '' }
+const groupRooms = new Map(); // groupId -> Set of userIds
 
 io.on('connection', (socket) => {
     console.log('User connected:', socket.id);
@@ -58,22 +61,53 @@ io.on('connection', (socket) => {
 
     // Call initiation
     socket.on('initiate-call', (data) => {
-        const { callId, recipientId, callType, initiatorData } = data;
-        const recipientSocketId = connectedUsers.get(recipientId);
+        const { callId, recipientId, callType, initiatorData, isGroupCall, groupId, participants } = data;
 
-        if (recipientSocketId) {
+        if (isGroupCall && groupId && participants) {
+            // Group call
+            const groupParticipants = [socket.userId, ...participants];
+
             activeCalls.set(callId, {
-                participants: [socket.userId, recipientId],
+                participants: groupParticipants,
                 status: 'ringing',
                 callType,
-                initiator: socket.userId
+                initiator: socket.userId,
+                isGroupCall: true,
+                groupId
             });
 
-            io.to(recipientSocketId).emit('incoming-call', {
-                callId,
-                callType,
-                initiator: initiatorData
+            // Notify all group members
+            participants.forEach(participantId => {
+                const participantSocketId = connectedUsers.get(participantId);
+                if (participantSocketId) {
+                    io.to(participantSocketId).emit('incoming-group-call', {
+                        callId,
+                        callType,
+                        initiator: initiatorData,
+                        groupId,
+                        participants: groupParticipants
+                    });
+                }
             });
+        } else if (recipientId) {
+            // Direct call
+            const recipientSocketId = connectedUsers.get(recipientId);
+
+            if (recipientSocketId) {
+                activeCalls.set(callId, {
+                    participants: [socket.userId, recipientId],
+                    status: 'ringing',
+                    callType,
+                    initiator: socket.userId,
+                    isGroupCall: false
+                });
+
+                io.to(recipientSocketId).emit('incoming-call', {
+                    callId,
+                    callType,
+                    initiator: initiatorData
+                });
+            }
         }
     });
 
@@ -203,6 +237,66 @@ io.on('connection', (socket) => {
         }
     });
 
+    // Group messaging events
+    socket.on('join-group', (data) => {
+        const { groupId, userId } = data;
+        socket.join(`group_${groupId}`);
+
+        if (!groupRooms.has(groupId)) {
+            groupRooms.set(groupId, new Set());
+        }
+        groupRooms.get(groupId).add(userId);
+
+        console.log(`User ${userId} joined group ${groupId}`);
+    });
+
+    socket.on('leave-group', (data) => {
+        const { groupId, userId } = data;
+        socket.leave(`group_${groupId}`);
+
+        if (groupRooms.has(groupId)) {
+            groupRooms.get(groupId).delete(userId);
+            if (groupRooms.get(groupId).size === 0) {
+                groupRooms.delete(groupId);
+            }
+        }
+
+        console.log(`User ${userId} left group ${groupId}`);
+    });
+
+    socket.on('group-message', (data) => {
+        const { groupId, message } = data;
+
+        // Broadcast to all users in the group room except sender
+        socket.to(`group_${groupId}`).emit('new-group-message', {
+            groupId,
+            message
+        });
+    });
+
+    socket.on('group-typing', (data) => {
+        const { groupId, userId, isTyping } = data;
+
+        // Broadcast typing status to group members
+        socket.to(`group_${groupId}`).emit('group-typing-update', {
+            groupId,
+            userId,
+            isTyping
+        });
+    });
+
+    socket.on('group-message-reaction', (data) => {
+        const { groupId, messageId, reaction, userId } = data;
+
+        // Broadcast reaction to group members
+        socket.to(`group_${groupId}`).emit('group-message-reaction-update', {
+            groupId,
+            messageId,
+            reaction,
+            userId
+        });
+    });
+
     // Handle disconnect
     socket.on('disconnect', () => {
         if (socket.userId) {
@@ -230,6 +324,14 @@ io.on('connection', (socket) => {
                     } else {
                         activeCalls.set(callId, call);
                     }
+                }
+            }
+
+            // Remove user from all group rooms
+            for (const [groupId, userSet] of groupRooms.entries()) {
+                userSet.delete(socket.userId);
+                if (userSet.size === 0) {
+                    groupRooms.delete(groupId);
                 }
             }
         }

@@ -3,7 +3,7 @@ import sample_cover from './sample_cover.jpg'
 import sample_profile from './sample_profile.jpg'
 import bgImage from './bgImage.png'
 import group_users from './group_users.png'
-import { Home, MessageCircle, Search, UserIcon, Users, Bell } from 'lucide-react'
+import { Home, MessageCircle, Search, UserIcon, Users, Bell, PhoneCall, UsersRound } from 'lucide-react'
 import sponsored_img from './sponsored_img.png'
 
 export const assets = {
@@ -18,6 +18,8 @@ export const assets = {
 export const menuItemsData = [
     { to: '/', label: 'Feed', Icon: Home },
     { to: '/messages', label: 'Messages', Icon: MessageCircle },
+    { to: '/groups', label: 'Groups', Icon: UsersRound },
+    { to: '/call-history', label: 'Call History', Icon: PhoneCall },
     { to: '/connections', label: 'Connections', Icon: Users },
     { to: '/discover', label: 'Discover', Icon: Search },
     { to: '/notifications', label: 'Notifications', Icon: Bell, showBadge: true },

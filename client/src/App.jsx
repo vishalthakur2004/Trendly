@@ -9,6 +9,9 @@ import Discover from './pages/Discover'
 import Profile from './pages/Profile'
 import CreatePost from './pages/CreatePost'
 import Notifications from './pages/Notifications'
+import CallHistory from './pages/CallHistory'
+import Groups from './pages/Groups'
+import GroupDetail from './pages/GroupDetail'
 import {useUser, useAuth} from '@clerk/clerk-react'
 import Layout from './pages/Layout'
 import toast, {Toaster} from 'react-hot-toast'
@@ -208,6 +211,9 @@ const App = () => {
           <Route path='profile' element={<Profile/>}/>
           <Route path='profile/:profileId' element={<Profile/>}/>
           <Route path='create-post' element={<CreatePost/>}/>
+          <Route path='call-history' element={<CallHistory/>}/>
+          <Route path='groups' element={<Groups/>}/>
+          <Route path='groups/:groupId' element={<GroupDetail/>}/>
         </Route>
       </Routes>
 

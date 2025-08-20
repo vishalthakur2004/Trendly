@@ -1,8 +1,53 @@
-import { Calendar, MapPin, PenBox, Verified } from 'lucide-react'
+import { Calendar, MapPin, PenBox, Verified, Phone, Video, MessageSquare } from 'lucide-react'
 import moment from 'moment'
 import React from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { useAuth } from '@clerk/clerk-react'
+import { useNavigate } from 'react-router-dom'
+import { initiateCall, setCallInitiating } from '../features/calls/callsSlice'
+import socketService from '../services/socketService'
+import toast from 'react-hot-toast'
 
 const UserProfileInfo = ({user, posts, profileId, setShowEdit}) => {
+  const dispatch = useDispatch()
+  const { getToken } = useAuth()
+  const navigate = useNavigate()
+  const currentUser = useSelector((state) => state.user.value)
+  const { connections } = useSelector((state) => state.connections)
+
+  // Check if this user is in connections
+  const isConnection = connections.some(conn => conn._id === user._id)
+
+  const handleStartCall = async (callType) => {
+    try {
+      const token = await getToken()
+
+      dispatch(setCallInitiating(true))
+
+      // Initiate call in database
+      const result = await dispatch(initiateCall({
+        recipientId: user._id,
+        callType,
+        isGroupCall: false,
+        token
+      })).unwrap()
+
+      // Send call signal via socket
+      socketService.initiateCall({
+        callId: result.call_id,
+        recipientId: user._id,
+        callType,
+        initiatorData: currentUser
+      })
+
+      toast.success(`${callType} call initiated with ${user.full_name}`)
+
+    } catch (error) {
+      console.error('Error starting call:', error)
+      toast.error(`Failed to start ${callType} call`)
+      dispatch(setCallInitiating(false))
+    }
+  }
   return (
     <div className='relative py-4 px-6 md:px-8 bg-white'>
       <div className='flex flex-col md:flex-row items-start gap-6'>
@@ -21,11 +66,44 @@ const UserProfileInfo = ({user, posts, profileId, setShowEdit}) => {
                     <p className='text-gray-600'>{user.username ? `@${user.username}` : 'Add a username'}</p>
                 </div>
                 {/* if user is not on others profile that means he is opening his profile so we will give edit button */}
-                {!profileId && 
+                {!profileId ? (
                     <button onClick={()=> setShowEdit(true)} className='flex items-center gap-2 border border-gray-300 hover:bg-gray-50 px-4 py-2 rounded-lg font-medium transition-colors mt-4 md:mt-0 cursor-pointer'>
                         <PenBox className='"w-4 h-4'/>
                         Edit
-                    </button>}
+                    </button>
+                ) : (
+                    /* Show call buttons and message button when viewing another user's profile */
+                    <div className='flex items-center gap-2 mt-4 md:mt-0'>
+                        <button
+                            onClick={() => navigate(`/messages/${user._id}`)}
+                            className='flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors cursor-pointer'
+                            title="Send Message"
+                        >
+                            <MessageSquare className="w-4 h-4"/>
+                            Message
+                        </button>
+
+                        {isConnection && (
+                            <>
+                                <button
+                                    onClick={() => handleStartCall('voice')}
+                                    className='flex items-center justify-center w-10 h-10 bg-green-50 text-green-600 rounded-lg hover:bg-green-100 transition-colors cursor-pointer'
+                                    title="Voice Call"
+                                >
+                                    <Phone className="w-4 h-4"/>
+                                </button>
+
+                                <button
+                                    onClick={() => handleStartCall('video')}
+                                    className='flex items-center justify-center w-10 h-10 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors cursor-pointer'
+                                    title="Video Call"
+                                >
+                                    <Video className="w-4 h-4"/>
+                                </button>
+                            </>
+                        )}
+                    </div>
+                )}
             </div>
             <p className='text-gray-700 text-sm max-w-md mt-4'>{user.bio}</p>
 
