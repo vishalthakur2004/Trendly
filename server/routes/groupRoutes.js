@@ -54,4 +54,14 @@ groupRouter.post('/:groupId/accept-invitation', protect, acceptInvitation);
 groupRouter.post('/:groupId/remove-member', protect, removeMember);
 groupRouter.post('/:groupId/update-role', protect, updateMemberRole);
 
+// Group post routes
+groupRouter.post('/:groupId/posts', protect, createGroupPost);
+groupRouter.get('/:groupId/posts', protect, getGroupPosts);
+groupRouter.get('/:groupId/posts/pending', protect, getPendingPosts);
+groupRouter.post('/:groupId/posts/:postId/moderate', protect, moderatePost);
+groupRouter.post('/:groupId/posts/:postId/like', protect, toggleLikeGroupPost);
+groupRouter.post('/:groupId/posts/:postId/pin', protect, togglePinPost);
+groupRouter.delete('/:groupId/posts/:postId', protect, deleteGroupPost);
+groupRouter.post('/:groupId/posts/:postId/vote', protect, voteOnPoll);
+
 export default groupRouter;
