@@ -206,6 +206,66 @@ io.on('connection', (socket) => {
         }
     });
 
+    // Group messaging events
+    socket.on('join-group', (data) => {
+        const { groupId, userId } = data;
+        socket.join(`group_${groupId}`);
+
+        if (!groupRooms.has(groupId)) {
+            groupRooms.set(groupId, new Set());
+        }
+        groupRooms.get(groupId).add(userId);
+
+        console.log(`User ${userId} joined group ${groupId}`);
+    });
+
+    socket.on('leave-group', (data) => {
+        const { groupId, userId } = data;
+        socket.leave(`group_${groupId}`);
+
+        if (groupRooms.has(groupId)) {
+            groupRooms.get(groupId).delete(userId);
+            if (groupRooms.get(groupId).size === 0) {
+                groupRooms.delete(groupId);
+            }
+        }
+
+        console.log(`User ${userId} left group ${groupId}`);
+    });
+
+    socket.on('group-message', (data) => {
+        const { groupId, message } = data;
+
+        // Broadcast to all users in the group room except sender
+        socket.to(`group_${groupId}`).emit('new-group-message', {
+            groupId,
+            message
+        });
+    });
+
+    socket.on('group-typing', (data) => {
+        const { groupId, userId, isTyping } = data;
+
+        // Broadcast typing status to group members
+        socket.to(`group_${groupId}`).emit('group-typing-update', {
+            groupId,
+            userId,
+            isTyping
+        });
+    });
+
+    socket.on('group-message-reaction', (data) => {
+        const { groupId, messageId, reaction, userId } = data;
+
+        // Broadcast reaction to group members
+        socket.to(`group_${groupId}`).emit('group-message-reaction-update', {
+            groupId,
+            messageId,
+            reaction,
+            userId
+        });
+    });
+
     // Handle disconnect
     socket.on('disconnect', () => {
         if (socket.userId) {
