@@ -5,6 +5,7 @@ import messagesReducer from '../features/messages/messagesSlice.js'
 import commentsReducer from '../features/comments/commentsSlice.js'
 import postsReducer from '../features/posts/postsSlice.js'
 import notificationsReducer from '../features/notifications/notificationsSlice.js'
+import callsReducer from '../features/calls/callsSlice.js'
 
 export const store = configureStore({
     reducer: {
@@ -13,6 +14,14 @@ export const store = configureStore({
        messages: messagesReducer,
        comments: commentsReducer,
        posts: postsReducer,
-       notifications: notificationsReducer
-    }
+       notifications: notificationsReducer,
+       calls: callsReducer
+    },
+    middleware: (getDefaultMiddleware) =>
+        getDefaultMiddleware({
+            serializableCheck: {
+                ignoredActions: ['calls/setLocalStream', 'calls/addRemoteStream'],
+                ignoredPaths: ['calls.localStream', 'calls.remoteStreams']
+            }
+        })
 })
