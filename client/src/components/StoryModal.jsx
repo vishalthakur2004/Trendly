@@ -188,6 +188,14 @@ const StoryModal = ({setShowModal, fetchStories}) => {
             </button>
 
         </div>
+
+        {/* Camera Capture Modal */}
+        <CameraCapture
+            isOpen={showCamera}
+            onClose={() => setShowCamera(false)}
+            onCapture={handleCameraCapture}
+            captureType={cameraType}
+        />
     </div>
   )
 }
