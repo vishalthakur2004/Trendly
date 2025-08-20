@@ -195,6 +195,9 @@ export const generateNotificationContent = (type, senderName, metadata = {}) => 
             return `${senderName} liked your comment`;
         case 'mention':
             return `${senderName} mentioned you in a ${metadata.context || 'post'}`;
+        case 'call':
+            const callType = metadata.callType || 'voice';
+            return `${senderName} is calling you (${callType} call)`;
         default:
             return `${senderName} interacted with your content`;
     }
