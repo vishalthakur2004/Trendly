@@ -27,6 +27,17 @@ import {
     voteOnPoll
 } from '../controllers/groupPostController.js';
 
+import {
+    sendGroupMessage,
+    getGroupMessages,
+    markMessagesAsSeen,
+    addReaction,
+    removeReaction,
+    deleteGroupMessage,
+    editGroupMessage,
+    getUnreadCount
+} from '../controllers/groupMessageController.js';
+
 const groupRouter = express.Router();
 
 // Group management routes
