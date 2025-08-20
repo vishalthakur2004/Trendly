@@ -4,6 +4,7 @@ import connectionsReducer from '../features/connections/connectionsSlice.js'
 import messagesReducer from '../features/messages/messagesSlice.js'
 import commentsReducer from '../features/comments/commentsSlice.js'
 import postsReducer from '../features/posts/postsSlice.js'
+import notificationsReducer from '../features/notifications/notificationsSlice.js'
 
 export const store = configureStore({
     reducer: {
@@ -11,6 +12,7 @@ export const store = configureStore({
        connections: connectionsReducer,
        messages: messagesReducer,
        comments: commentsReducer,
-       posts: postsReducer
+       posts: postsReducer,
+       notifications: notificationsReducer
     }
 })
