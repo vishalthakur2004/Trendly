@@ -4,9 +4,8 @@ import api from '../../api/axios';
 // Async thunks for API calls
 export const fetchComments = createAsyncThunk(
     'comments/fetchComments',
-    async ({ postId, page = 1 }, { getState, rejectWithValue }) => {
+    async ({ postId, page = 1, token }, { rejectWithValue }) => {
         try {
-            const token = getState().user.token;
             const response = await api.get(`/api/comment/post/${postId}?page=${page}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
@@ -24,9 +23,8 @@ export const fetchComments = createAsyncThunk(
 
 export const addComment = createAsyncThunk(
     'comments/addComment',
-    async ({ postId, content, parentCommentId }, { getState, rejectWithValue }) => {
+    async ({ postId, content, parentCommentId, token }, { rejectWithValue }) => {
         try {
-            const token = getState().user.token;
             const response = await api.post('/api/comment/add', {
                 postId,
                 content,
@@ -48,9 +46,8 @@ export const addComment = createAsyncThunk(
 
 export const likeComment = createAsyncThunk(
     'comments/likeComment',
-    async ({ commentId }, { getState, rejectWithValue }) => {
+    async ({ commentId, token }, { rejectWithValue }) => {
         try {
-            const token = getState().user.token;
             const response = await api.post('/api/comment/like', {
                 commentId
             }, {
@@ -70,14 +67,13 @@ export const likeComment = createAsyncThunk(
 
 export const deleteComment = createAsyncThunk(
     'comments/deleteComment',
-    async ({ commentId }, { getState, rejectWithValue }) => {
+    async ({ commentId, token }, { rejectWithValue }) => {
         try {
-            const token = getState().user.token;
             const response = await api.delete('/api/comment/delete', {
                 data: { commentId },
                 headers: { Authorization: `Bearer ${token}` }
             });
-            
+
             if (response.data.success) {
                 return { commentId };
             } else {
@@ -91,9 +87,8 @@ export const deleteComment = createAsyncThunk(
 
 export const fetchReplies = createAsyncThunk(
     'comments/fetchReplies',
-    async ({ commentId, page = 1 }, { getState, rejectWithValue }) => {
+    async ({ commentId, page = 1, token }, { rejectWithValue }) => {
         try {
-            const token = getState().user.token;
             const response = await api.get(`/api/comment/replies/${commentId}?page=${page}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
