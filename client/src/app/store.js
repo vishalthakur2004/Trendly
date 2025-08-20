@@ -7,6 +7,7 @@ import postsReducer from '../features/posts/postsSlice.js'
 import notificationsReducer from '../features/notifications/notificationsSlice.js'
 import callsReducer from '../features/calls/callsSlice.js'
 import groupsReducer from '../features/groups/groupsSlice.js'
+import groupPostsReducer from '../features/groups/groupPostsSlice.js'
 
 export const store = configureStore({
     reducer: {
