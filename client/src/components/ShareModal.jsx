@@ -2,10 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Search, Send, X, Check } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { useAuth } from '@clerk/clerk-react';
 import { sharePost, fetchUserConnections, clearShareState } from '../features/posts/postsSlice';
 
 const ShareModal = ({ postId, isOpen, onClose }) => {
     const dispatch = useDispatch();
+    const { getToken } = useAuth();
     const { connections, sharing } = useSelector((state) => state.posts);
     const [selectedUsers, setSelectedUsers] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
@@ -13,9 +15,13 @@ const ShareModal = ({ postId, isOpen, onClose }) => {
 
     useEffect(() => {
         if (isOpen && connections.length === 0) {
-            dispatch(fetchUserConnections());
+            const loadConnections = async () => {
+                const token = await getToken();
+                dispatch(fetchUserConnections({ token }));
+            };
+            loadConnections();
         }
-    }, [isOpen, dispatch, connections.length]);
+    }, [isOpen, dispatch, connections.length, getToken]);
 
     useEffect(() => {
         if (!isOpen) {
@@ -49,13 +55,15 @@ const ShareModal = ({ postId, isOpen, onClose }) => {
         }
 
         try {
+            const token = await getToken();
             const recipientIds = selectedUsers.map(user => user._id);
-            await dispatch(sharePost({ 
-                postId, 
-                recipientIds, 
-                message: shareMessage 
+            await dispatch(sharePost({
+                postId,
+                recipientIds,
+                message: shareMessage,
+                token
             })).unwrap();
-            
+
             toast.success(`Post shared with ${selectedUsers.length} ${selectedUsers.length === 1 ? 'person' : 'people'}`);
             onClose();
         } catch (error) {

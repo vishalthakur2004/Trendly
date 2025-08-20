@@ -25,18 +25,24 @@ const CommentsSection = ({ postId, isOpen, onClose }) => {
 
     useEffect(() => {
         if (isOpen && postId && !commentsState) {
-            dispatch(fetchComments({ postId }));
+            const loadComments = async () => {
+                const token = await getToken();
+                dispatch(fetchComments({ postId, token }));
+            };
+            loadComments();
         }
-    }, [isOpen, postId, dispatch, commentsState]);
+    }, [isOpen, postId, dispatch, commentsState, getToken]);
 
     const handleAddComment = async (e) => {
         e.preventDefault();
         if (!newComment.trim()) return;
 
         try {
-            await dispatch(addComment({ 
-                postId, 
-                content: newComment.trim() 
+            const token = await getToken();
+            await dispatch(addComment({
+                postId,
+                content: newComment.trim(),
+                token
             })).unwrap();
             setNewComment('');
             toast.success('Comment added successfully');
@@ -50,10 +56,12 @@ const CommentsSection = ({ postId, isOpen, onClose }) => {
         if (!replyText.trim()) return;
 
         try {
-            await dispatch(addComment({ 
-                postId, 
+            const token = await getToken();
+            await dispatch(addComment({
+                postId,
                 content: replyText.trim(),
-                parentCommentId 
+                parentCommentId,
+                token
             })).unwrap();
             setReplyText('');
             setReplyingTo(null);
@@ -67,23 +75,24 @@ const CommentsSection = ({ postId, isOpen, onClose }) => {
         try {
             const comment = findCommentById(commentId);
             const isLiked = comment?.likes?.includes(currentUser._id);
-            
+
             // Optimistic update
-            dispatch(updateCommentLike({ 
-                commentId, 
-                userId: currentUser._id, 
-                isLiked: !isLiked 
+            dispatch(updateCommentLike({
+                commentId,
+                userId: currentUser._id,
+                isLiked: !isLiked
             }));
 
-            await dispatch(likeComment({ commentId })).unwrap();
+            const token = await getToken();
+            await dispatch(likeComment({ commentId, token })).unwrap();
         } catch (error) {
             // Revert optimistic update
             const comment = findCommentById(commentId);
             const isLiked = comment?.likes?.includes(currentUser._id);
-            dispatch(updateCommentLike({ 
-                commentId, 
-                userId: currentUser._id, 
-                isLiked: !isLiked 
+            dispatch(updateCommentLike({
+                commentId,
+                userId: currentUser._id,
+                isLiked: !isLiked
             }));
             toast.error(error);
         }
@@ -92,7 +101,8 @@ const CommentsSection = ({ postId, isOpen, onClose }) => {
     const handleDeleteComment = async (commentId) => {
         if (window.confirm('Are you sure you want to delete this comment?')) {
             try {
-                await dispatch(deleteComment({ commentId })).unwrap();
+                const token = await getToken();
+                await dispatch(deleteComment({ commentId, token })).unwrap();
                 toast.success('Comment deleted successfully');
             } catch (error) {
                 toast.error(error);

@@ -4,9 +4,8 @@ import api from '../../api/axios';
 // Async thunks for API calls
 export const sharePost = createAsyncThunk(
     'posts/sharePost',
-    async ({ postId, recipientIds, message }, { getState, rejectWithValue }) => {
+    async ({ postId, recipientIds, message, token }, { rejectWithValue }) => {
         try {
-            const token = getState().user.token;
             const response = await api.post('/api/post/share', {
                 postId,
                 recipientIds,
@@ -14,7 +13,7 @@ export const sharePost = createAsyncThunk(
             }, {
                 headers: { Authorization: `Bearer ${token}` }
             });
-            
+
             if (response.data.success) {
                 return { postId, message: response.data.message };
             } else {
@@ -28,9 +27,8 @@ export const sharePost = createAsyncThunk(
 
 export const fetchUserConnections = createAsyncThunk(
     'posts/fetchUserConnections',
-    async (_, { getState, rejectWithValue }) => {
+    async ({ token }, { rejectWithValue }) => {
         try {
-            const token = getState().user.token;
             const response = await api.get('/api/post/connections', {
                 headers: { Authorization: `Bearer ${token}` }
             });
