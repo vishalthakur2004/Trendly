@@ -7,16 +7,46 @@ import { createNotification, generateNotificationContent } from "./notificationC
 export const initiateCall = async (req, res) => {
     try {
         const { userId } = req.auth();
-        const { recipientId, callType, isGroupCall = false } = req.body;
+        const { recipientId, callType, isGroupCall = false, groupId = null } = req.body;
 
-        if (!recipientId || !callType) {
-            return res.json({ success: false, message: "Recipient ID and call type are required" });
+        if (!callType) {
+            return res.json({ success: false, message: "Call type is required" });
         }
 
-        // Check if recipient exists
-        const recipient = await User.findById(recipientId);
-        if (!recipient) {
-            return res.json({ success: false, message: "Recipient not found" });
+        let participants = [];
+        let callName = '';
+
+        if (groupId) {
+            // Group call
+            const group = await Group.findById(groupId);
+            if (!group || !group.is_active) {
+                return res.json({ success: false, message: "Group not found" });
+            }
+
+            // Check if user is a member and calling is allowed
+            if (!group.isMember(userId)) {
+                return res.json({ success: false, message: "You are not a member of this group" });
+            }
+
+            if (!group.settings.allow_member_calls && !group.isAdmin(userId) && !group.isModerator(userId)) {
+                return res.json({ success: false, message: "Group calls are not allowed" });
+            }
+
+            // Get all group members except initiator
+            participants = group.members
+                .filter(member => member.user.toString() !== userId)
+                .map(member => member.user);
+
+            callName = group.name;
+        } else if (recipientId) {
+            // Direct call
+            const recipient = await User.findById(recipientId);
+            if (!recipient) {
+                return res.json({ success: false, message: "Recipient not found" });
+            }
+            participants = [recipientId];
+        } else {
+            return res.json({ success: false, message: "Recipient ID or Group ID is required" });
         }
 
         // Generate unique call ID
