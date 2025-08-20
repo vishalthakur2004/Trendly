@@ -2,6 +2,7 @@ import fs from "fs";
 import imagekit from "../configs/imageKit.js";
 import Post from "../models/Post.js";
 import User from "../models/User.js";
+import Message from "../models/Message.js";
 
 // Add Post
 export const addPost = async (req, res) => {
