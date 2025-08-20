@@ -74,6 +74,10 @@ export const likePost = async (req, res) =>{
 
         const post = await Post.findById(postId)
 
+        if (!post) {
+            return res.json({ success: false, message: 'Post not found' });
+        }
+
         if(post.likes_count.includes(userId)){
             post.likes_count = post.likes_count.filter(user => user !== userId)
             await post.save()
@@ -86,6 +90,74 @@ export const likePost = async (req, res) =>{
 
     } catch (error) {
         console.log(error);
-        res.json({ success: false, message: error.message });
+        res.json({ success: false, message: "Failed to like post. Please try again." });
     }
 }
+
+// Share Post in Chat
+export const sharePost = async (req, res) => {
+    try {
+        const { userId } = req.auth();
+        const { postId, recipientIds, message: shareMessage = "" } = req.body;
+
+        if (!postId || !recipientIds || !Array.isArray(recipientIds) || recipientIds.length === 0) {
+            return res.json({ success: false, message: "Post ID and recipient list are required" });
+        }
+
+        // Check if post exists
+        const post = await Post.findById(postId);
+        if (!post) {
+            return res.json({ success: false, message: "Post not found" });
+        }
+
+        // Create share messages for each recipient
+        const sharePromises = recipientIds.map(recipientId => {
+            return Message.create({
+                from_user_id: userId,
+                to_user_id: recipientId,
+                text: shareMessage,
+                message_type: 'shared_post',
+                shared_post: postId
+            });
+        });
+
+        await Promise.all(sharePromises);
+
+        // Increment post shares count
+        await Post.findByIdAndUpdate(postId, { $inc: { shares_count: 1 } });
+
+        res.json({
+            success: true,
+            message: `Post shared with ${recipientIds.length} ${recipientIds.length === 1 ? 'person' : 'people'}`
+        });
+    } catch (error) {
+        console.log(error);
+        res.json({ success: false, message: "Failed to share post. Please try again." });
+    }
+};
+
+// Get User Connections for Sharing
+export const getUserConnections = async (req, res) => {
+    try {
+        const { userId } = req.auth();
+
+        const user = await User.findById(userId)
+            .populate('connections', 'full_name username profile_picture')
+            .populate('following', 'full_name username profile_picture');
+
+        if (!user) {
+            return res.json({ success: false, message: "User not found" });
+        }
+
+        // Combine connections and following, remove duplicates
+        const allConnections = [...user.connections, ...user.following];
+        const uniqueConnections = allConnections.filter((connection, index, self) =>
+            index === self.findIndex(c => c._id.toString() === connection._id.toString())
+        );
+
+        res.json({ success: true, connections: uniqueConnections });
+    } catch (error) {
+        console.log(error);
+        res.json({ success: false, message: "Failed to load connections" });
+    }
+};
