@@ -1,5 +1,5 @@
 import { useAuth } from '@clerk/clerk-react'
-import { ArrowLeft, Sparkle, TextIcon, Upload } from 'lucide-react'
+import { ArrowLeft, Sparkle, TextIcon, Upload, Camera } from 'lucide-react'
 import React, { useState } from 'react'
 import toast from 'react-hot-toast'
 import api from '../api/axios'
