@@ -79,6 +79,10 @@ const PostCard = ({post}) => {
         setShowShareModal(true);
     }
 
+    const handleAddToStory = () => {
+        setShowShareToStoryModal(true);
+    }
+
     const navigate = useNavigate()
 
   return (
