@@ -213,6 +213,7 @@ const App = () => {
           <Route path='create-post' element={<CreatePost/>}/>
           <Route path='call-history' element={<CallHistory/>}/>
           <Route path='groups' element={<Groups/>}/>
+          <Route path='groups/:groupId' element={<GroupDetail/>}/>
         </Route>
       </Routes>
 
