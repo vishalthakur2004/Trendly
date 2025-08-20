@@ -161,6 +161,12 @@ const PostCard = ({post}) => {
             onClose={() => setShowShareModal(false)}
         />
 
+        {/* Share to Story Modal */}
+        <ShareToStoryModal
+            post={post}
+            isOpen={showShareToStoryModal}
+            onClose={() => setShowShareToStoryModal(false)}
+        />
 
     </div>
   )
