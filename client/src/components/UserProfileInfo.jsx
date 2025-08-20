@@ -66,11 +66,44 @@ const UserProfileInfo = ({user, posts, profileId, setShowEdit}) => {
                     <p className='text-gray-600'>{user.username ? `@${user.username}` : 'Add a username'}</p>
                 </div>
                 {/* if user is not on others profile that means he is opening his profile so we will give edit button */}
-                {!profileId && 
+                {!profileId ? (
                     <button onClick={()=> setShowEdit(true)} className='flex items-center gap-2 border border-gray-300 hover:bg-gray-50 px-4 py-2 rounded-lg font-medium transition-colors mt-4 md:mt-0 cursor-pointer'>
                         <PenBox className='"w-4 h-4'/>
                         Edit
-                    </button>}
+                    </button>
+                ) : (
+                    /* Show call buttons and message button when viewing another user's profile */
+                    <div className='flex items-center gap-2 mt-4 md:mt-0'>
+                        <button
+                            onClick={() => navigate(`/messages/${user._id}`)}
+                            className='flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors cursor-pointer'
+                            title="Send Message"
+                        >
+                            <MessageSquare className="w-4 h-4"/>
+                            Message
+                        </button>
+
+                        {isConnection && (
+                            <>
+                                <button
+                                    onClick={() => handleStartCall('voice')}
+                                    className='flex items-center justify-center w-10 h-10 bg-green-50 text-green-600 rounded-lg hover:bg-green-100 transition-colors cursor-pointer'
+                                    title="Voice Call"
+                                >
+                                    <Phone className="w-4 h-4"/>
+                                </button>
+
+                                <button
+                                    onClick={() => handleStartCall('video')}
+                                    className='flex items-center justify-center w-10 h-10 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors cursor-pointer'
+                                    title="Video Call"
+                                >
+                                    <Video className="w-4 h-4"/>
+                                </button>
+                            </>
+                        )}
+                    </div>
+                )}
             </div>
             <p className='text-gray-700 text-sm max-w-md mt-4'>{user.bio}</p>
 
