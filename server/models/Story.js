@@ -7,6 +7,7 @@ const storySchema = new mongoose.Schema({
     media_type: {type: String, enum: ['text', 'image', 'video']},
     views_count: [{type: String, ref: 'User'}],
     background_color: { type: String  },
+    shared_post: {type: mongoose.Schema.Types.ObjectId, ref: 'Post'},
 }, {timestamps: true, minimize: false})
 
 const Story = mongoose.model('Story', storySchema)
