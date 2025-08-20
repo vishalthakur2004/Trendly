@@ -18,6 +18,7 @@ const PostCard = ({post}) => {
     const [sharesCount, setSharesCount] = useState(post.shares_count || 0)
     const [showComments, setShowComments] = useState(false)
     const [showShareModal, setShowShareModal] = useState(false)
+    const [showShareToStoryModal, setShowShareToStoryModal] = useState(false)
     const [isLiking, setIsLiking] = useState(false)
 
     const currentUser = useSelector((state) => state.user.value)
