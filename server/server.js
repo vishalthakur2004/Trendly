@@ -42,6 +42,7 @@ app.use('/api/message', messageRouter)
 app.use('/api/comment', commentRouter)
 app.use('/api/notification', notificationRouter)
 app.use('/api/call', callRouter)
+app.use('/api/group', groupRouter)
 
 // Socket.io connection handling for calls
 const connectedUsers = new Map(); // userId -> socketId
