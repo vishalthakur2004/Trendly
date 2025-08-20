@@ -136,6 +136,15 @@ const PostCard = ({post}) => {
                 <Share2 className="w-4 h-4"/>
                 <span>{sharesCount}</span>
             </button>
+
+            <button
+                onClick={handleAddToStory}
+                className='flex items-center gap-1 hover:text-purple-500 transition-colors cursor-pointer ml-auto'
+                title="Add to Story"
+            >
+                <Plus className="w-4 h-4"/>
+                <span className="text-xs">Story</span>
+            </button>
         </div>
 
         {/* Comments Section Modal */}
