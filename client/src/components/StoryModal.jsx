@@ -14,6 +14,8 @@ const StoryModal = ({setShowModal, fetchStories}) => {
     const [text, setText] = useState("")
     const [media, setMedia] = useState(null)
     const [previewUrl, setPreviewUrl] = useState(null)
+    const [showCamera, setShowCamera] = useState(false)
+    const [cameraType, setCameraType] = useState('photo')
 
     const {getToken} = useAuth()
 
