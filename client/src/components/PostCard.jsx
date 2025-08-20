@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { BadgeCheck, Heart, MessageCircle, Share2 } from 'lucide-react'
+import { BadgeCheck, Heart, MessageCircle, Share2, Plus } from 'lucide-react'
 import moment from 'moment'
 import { useNavigate } from 'react-router-dom'
 import { useSelector } from 'react-redux';
@@ -8,6 +8,7 @@ import api from '../api/axios'
 import toast from 'react-hot-toast'
 import CommentsSection from './CommentsSection'
 import ShareModal from './ShareModal'
+import ShareToStoryModal from './ShareToStoryModal'
 
 const PostCard = ({post}) => {
 
@@ -17,6 +18,7 @@ const PostCard = ({post}) => {
     const [sharesCount, setSharesCount] = useState(post.shares_count || 0)
     const [showComments, setShowComments] = useState(false)
     const [showShareModal, setShowShareModal] = useState(false)
+    const [showShareToStoryModal, setShowShareToStoryModal] = useState(false)
     const [isLiking, setIsLiking] = useState(false)
 
     const currentUser = useSelector((state) => state.user.value)
@@ -77,6 +79,10 @@ const PostCard = ({post}) => {
         setShowShareModal(true);
     }
 
+    const handleAddToStory = () => {
+        setShowShareToStoryModal(true);
+    }
+
     const navigate = useNavigate()
 
   return (
@@ -130,6 +136,15 @@ const PostCard = ({post}) => {
                 <Share2 className="w-4 h-4"/>
                 <span>{sharesCount}</span>
             </button>
+
+            <button
+                onClick={handleAddToStory}
+                className='flex items-center gap-1 hover:text-purple-500 transition-colors cursor-pointer ml-auto'
+                title="Add to Story"
+            >
+                <Plus className="w-4 h-4"/>
+                <span className="text-xs">Story</span>
+            </button>
         </div>
 
         {/* Comments Section Modal */}
@@ -146,6 +161,12 @@ const PostCard = ({post}) => {
             onClose={() => setShowShareModal(false)}
         />
 
+        {/* Share to Story Modal */}
+        <ShareToStoryModal
+            post={post}
+            isOpen={showShareToStoryModal}
+            onClose={() => setShowShareToStoryModal(false)}
+        />
 
     </div>
   )

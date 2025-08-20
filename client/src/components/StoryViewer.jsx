@@ -40,6 +40,58 @@ const StoryViewer = ({viewStory, setViewStory}) => {
     if(!viewStory) return null
 
     const renderContent = ()=>{
+        // Check if this is a shared post story
+        if (viewStory.shared_post) {
+            return (
+                <div className='w-full max-w-md mx-auto p-4'>
+                    {/* User's story content */}
+                    {viewStory.content && (
+                        <div className='mb-4 p-3 bg-black bg-opacity-50 rounded-lg'>
+                            <p className='text-white text-lg text-center'>{viewStory.content}</p>
+                        </div>
+                    )}
+
+                    {/* Shared post card */}
+                    <div className='bg-white rounded-lg p-4 shadow-lg'>
+                        <div className='flex items-center gap-2 mb-3'>
+                            <img
+                                src={viewStory.shared_post.user.profile_picture}
+                                alt={viewStory.shared_post.user.full_name}
+                                className='w-8 h-8 rounded-full'
+                            />
+                            <div>
+                                <p className='text-gray-900 font-medium text-sm'>{viewStory.shared_post.user.full_name}</p>
+                                <p className='text-gray-500 text-xs'>@{viewStory.shared_post.user.username}</p>
+                            </div>
+                        </div>
+
+                        {viewStory.shared_post.content && (
+                            <p className='text-gray-800 text-sm mb-3'>{viewStory.shared_post.content}</p>
+                        )}
+
+                        {viewStory.shared_post.image_urls && viewStory.shared_post.image_urls.length > 0 && (
+                            <div className='grid gap-2'>
+                                {viewStory.shared_post.image_urls.slice(0, 2).map((img, index) => (
+                                    <img
+                                        key={index}
+                                        src={img}
+                                        alt=""
+                                        className='w-full h-32 object-cover rounded'
+                                    />
+                                ))}
+                                {viewStory.shared_post.image_urls.length > 2 && (
+                                    <div className='text-center text-gray-500 text-xs'>
+                                        +{viewStory.shared_post.image_urls.length - 2} more images
+                                    </div>
+                                )}
+                            </div>
+                        )}
+                    </div>
+                </div>
+            );
+        }
+
+        // Regular story content
         switch (viewStory.media_type) {
             case 'image':
                 return (
@@ -55,7 +107,7 @@ const StoryViewer = ({viewStory, setViewStory}) => {
                         {viewStory.content}
                     </div>
                 );
-        
+
             default:
                 return null;
         }

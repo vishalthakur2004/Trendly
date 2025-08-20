@@ -1,8 +1,9 @@
 import { useAuth } from '@clerk/clerk-react'
-import { ArrowLeft, Sparkle, TextIcon, Upload } from 'lucide-react'
+import { ArrowLeft, Sparkle, TextIcon, Upload, Camera } from 'lucide-react'
 import React, { useState } from 'react'
 import toast from 'react-hot-toast'
 import api from '../api/axios'
+import CameraCapture from './CameraCapture'
 
 const StoryModal = ({setShowModal, fetchStories}) => {
 
@@ -13,6 +14,8 @@ const StoryModal = ({setShowModal, fetchStories}) => {
     const [text, setText] = useState("")
     const [media, setMedia] = useState(null)
     const [previewUrl, setPreviewUrl] = useState(null)
+    const [showCamera, setShowCamera] = useState(false)
+    const [cameraType, setCameraType] = useState('photo')
 
     const {getToken} = useAuth()
 
@@ -52,6 +55,40 @@ const StoryModal = ({setShowModal, fetchStories}) => {
                 setMode("media")
             }
         }
+    }
+
+    const handleCameraCapture = (file) => {
+        if (file.type.startsWith("video")) {
+            // Check video duration and size
+            const video = document.createElement('video');
+            video.preload = 'metadata';
+            video.onloadedmetadata = () => {
+                window.URL.revokeObjectURL(video.src);
+                if (video.duration > MAX_VIDEO_DURATION) {
+                    toast.error("Video duration cannot exceed 1 minute.");
+                    return;
+                }
+                if (file.size > MAX_VIDEO_SIZE_MB * 1024 * 1024) {
+                    toast.error(`Video file size cannot exceed ${MAX_VIDEO_SIZE_MB}MB.`);
+                    return;
+                }
+                setMedia(file);
+                setPreviewUrl(URL.createObjectURL(file));
+                setText('');
+                setMode("media");
+            }
+            video.src = URL.createObjectURL(file);
+        } else if (file.type.startsWith("image")) {
+            setMedia(file);
+            setPreviewUrl(URL.createObjectURL(file));
+            setText('');
+            setMode("media");
+        }
+    }
+
+    const handleCameraClick = (type) => {
+        setCameraType(type);
+        setShowCamera(true);
     }
 
     const handleCreateStory = async () => {
@@ -126,8 +163,24 @@ const StoryModal = ({setShowModal, fetchStories}) => {
                 </button>
                 <label className={`flex-1 flex items-center justify-center gap-2 p-2 rounded cursor-pointer ${mode === 'media' ? "bg-white text-black" : "bg-zinc-800"}`}>
                     <input onChange={handleMediaUpload} type="file" accept='image/*, video/*' className='hidden'/>
-                    <Upload size={18}/> Photo/Video
+                    <Upload size={18}/> Upload
                 </label>
+            </div>
+
+            {/* Camera Options */}
+            <div className='flex gap-2 mt-2'>
+                <button
+                    onClick={() => handleCameraClick('photo')}
+                    className='flex-1 flex items-center justify-center gap-2 p-2 rounded cursor-pointer bg-zinc-800 hover:bg-zinc-700 transition-colors'
+                >
+                    <Camera size={18}/> Photo
+                </button>
+                <button
+                    onClick={() => handleCameraClick('video')}
+                    className='flex-1 flex items-center justify-center gap-2 p-2 rounded cursor-pointer bg-zinc-800 hover:bg-zinc-700 transition-colors'
+                >
+                    <Camera size={18}/> Video
+                </button>
             </div>
             <button onClick={()=> toast.promise(handleCreateStory(), {
                 loading: 'Saving...',})} className='flex items-center justify-center gap-2 text-white py-3 mt-4 w-full rounded bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 active:scale-95 transition cursor-pointer'>
@@ -135,6 +188,14 @@ const StoryModal = ({setShowModal, fetchStories}) => {
             </button>
 
         </div>
+
+        {/* Camera Capture Modal */}
+        <CameraCapture
+            isOpen={showCamera}
+            onClose={() => setShowCamera(false)}
+            onCapture={handleCameraCapture}
+            captureType={cameraType}
+        />
     </div>
   )
 }
