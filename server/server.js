@@ -61,22 +61,53 @@ io.on('connection', (socket) => {
 
     // Call initiation
     socket.on('initiate-call', (data) => {
-        const { callId, recipientId, callType, initiatorData } = data;
-        const recipientSocketId = connectedUsers.get(recipientId);
+        const { callId, recipientId, callType, initiatorData, isGroupCall, groupId, participants } = data;
 
-        if (recipientSocketId) {
+        if (isGroupCall && groupId && participants) {
+            // Group call
+            const groupParticipants = [socket.userId, ...participants];
+
             activeCalls.set(callId, {
-                participants: [socket.userId, recipientId],
+                participants: groupParticipants,
                 status: 'ringing',
                 callType,
-                initiator: socket.userId
+                initiator: socket.userId,
+                isGroupCall: true,
+                groupId
             });
 
-            io.to(recipientSocketId).emit('incoming-call', {
-                callId,
-                callType,
-                initiator: initiatorData
+            // Notify all group members
+            participants.forEach(participantId => {
+                const participantSocketId = connectedUsers.get(participantId);
+                if (participantSocketId) {
+                    io.to(participantSocketId).emit('incoming-group-call', {
+                        callId,
+                        callType,
+                        initiator: initiatorData,
+                        groupId,
+                        participants: groupParticipants
+                    });
+                }
             });
+        } else if (recipientId) {
+            // Direct call
+            const recipientSocketId = connectedUsers.get(recipientId);
+
+            if (recipientSocketId) {
+                activeCalls.set(callId, {
+                    participants: [socket.userId, recipientId],
+                    status: 'ringing',
+                    callType,
+                    initiator: socket.userId,
+                    isGroupCall: false
+                });
+
+                io.to(recipientSocketId).emit('incoming-call', {
+                    callId,
+                    callType,
+                    initiator: initiatorData
+                });
+            }
         }
     });
 
