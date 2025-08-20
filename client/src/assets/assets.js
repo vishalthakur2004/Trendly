@@ -18,6 +18,7 @@ export const assets = {
 export const menuItemsData = [
     { to: '/', label: 'Feed', Icon: Home },
     { to: '/messages', label: 'Messages', Icon: MessageCircle },
+    { to: '/call-history', label: 'Call History', Icon: PhoneCall },
     { to: '/connections', label: 'Connections', Icon: Users },
     { to: '/discover', label: 'Discover', Icon: Search },
     { to: '/notifications', label: 'Notifications', Icon: Bell, showBadge: true },
