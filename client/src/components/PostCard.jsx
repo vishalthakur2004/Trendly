@@ -8,6 +8,7 @@ import api from '../api/axios'
 import toast from 'react-hot-toast'
 import CommentsSection from './CommentsSection'
 import ShareModal from './ShareModal'
+import ShareToStoryModal from './ShareToStoryModal'
 
 const PostCard = ({post}) => {
 
