@@ -16,7 +16,6 @@ const PostCard = ({post}) => {
     const [likes, setLikes] = useState(post.likes_count)
     const [commentsCount, setCommentsCount] = useState(post.comments_count || 0)
     const [sharesCount, setSharesCount] = useState(post.shares_count || 0)
-    const [showComments, setShowComments] = useState(false)
     const [showShareModal, setShowShareModal] = useState(false)
     const [showShareToStoryModal, setShowShareToStoryModal] = useState(false)
     const [isLiking, setIsLiking] = useState(false)
