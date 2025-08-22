@@ -221,7 +221,8 @@ const App = () => {
       {/* Call Components */}
       {user && (
         <>
-          <IncomingCallModal />
+          <IncomingCallScreen />
+          <CallingScreen />
           {isCallActive && <CallInterface />}
         </>
       )}
