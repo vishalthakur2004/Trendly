@@ -145,7 +145,7 @@ const ShareToStoryModal = ({ isOpen, onClose, post }) => {
                 </div>
 
                 {/* Footer */}
-                <div className='p-4 border-t border-gray-200'>
+                <div className='p-4 border-t border-gray-200 flex-shrink-0'>
                     <div className='flex gap-3'>
                         <button
                             onClick={onClose}
