@@ -303,11 +303,11 @@ const GroupPostCard = ({ post, groupId, canModerate = false }) => {
                 </button>
             </div>
 
-            {/* Liked By Section */}
+            {/* Liked By Section - Instagram style */}
             {post.likes_count && post.likes_count.length > 0 && (
                 <LikedBy
                     likes={post.likes_count}
-                    className="px-1 mt-2"
+                    className="px-1 mt-1"
                 />
             )}
 

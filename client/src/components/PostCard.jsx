@@ -14,7 +14,7 @@ import LikedBy from './LikedBy'
 
 const PostCard = ({post}) => {
 
-    const postWithHashtags = post.content.replace(/(#\w+)/g, '<span class="text-indigo-600">$1</span>')
+    const postWithHashtags = post.content.replace(/(#\w+)/g, '<span class="text-blue-600">$1</span>')
     const [likes, setLikes] = useState(post.likes_count)
     const [commentsCount, setCommentsCount] = useState(post.comments_count || 0)
     const [sharesCount, setSharesCount] = useState(post.shares_count || 0)
@@ -100,111 +100,143 @@ const PostCard = ({post}) => {
     const navigate = useNavigate()
 
   return (
-    <div className='bg-white rounded-xl shadow p-4 space-y-4 w-full max-w-2xl'>
-        {/* User Info */}
-        <div onClick={()=> navigate('/profile/' + post.user._id)} className='inline-flex items-center gap-3 cursor-pointer hover:bg-gray-50 p-2 -m-2 rounded-lg transition-colors'>
-            <Avatar
-                src={post.user.profile_picture}
-                name={post.user.full_name}
-                size="md"
-            />
-            <div>
-                <div className='flex items-center space-x-1'>
-                    <span className='font-semibold text-gray-900'>{post.user.full_name}</span>
-                    <BadgeCheck className='w-4 h-4 text-blue-500'/>
+    <div className='bg-white w-full max-w-lg mx-auto md:rounded-xl md:shadow-sm md:border border-gray-200'>
+        {/* User Info Header - Instagram Style */}
+        <div onClick={()=> navigate('/profile/' + post.user._id)} className='flex items-center justify-between p-3 cursor-pointer hover:bg-gray-50 transition-colors'>
+            <div className="flex items-center gap-3">
+                <Avatar
+                    src={post.user.profile_picture}
+                    name={post.user.full_name}
+                    size="md"
+                />
+                <div>
+                    <div className='flex items-center gap-1'>
+                        <span className='font-semibold text-gray-900 text-sm'>{post.user.username}</span>
+                        <BadgeCheck className='w-4 h-4 text-blue-500'/>
+                    </div>
+                    <div className='text-gray-500 text-xs'>{moment(post.createdAt).fromNow()}</div>
                 </div>
-                <div className='text-gray-500 text-sm'>@{post.user.username} • {moment(post.createdAt).fromNow()}</div>
             </div>
-        </div>
-         {/* Content */}
-         {post.content && <div className='text-gray-800 text-sm whitespace-pre-line' dangerouslySetInnerHTML={{__html: postWithHashtags}}/>}
-
-       {/* Images */}
-       <div className='grid grid-cols-2 gap-2'>
-            {post.image_urls.map((img, index)=>(
-                <img src={img} key={index} className={`w-full h-48 object-cover rounded-lg ${post.image_urls.length === 1 && 'col-span-2 h-auto'}`} alt="" />
-            ))}
-       </div>
-
-        {/* Actions */}
-        <div className='flex items-center gap-4 text-gray-600 text-sm pt-2 border-t border-gray-300'>
-            <button
-                onClick={handleLike}
-                disabled={isLiking}
-                className={`flex items-center gap-1 hover:text-red-500 transition-colors ${
-                    likes && likes.some(like =>
-                        typeof like === 'string' ? like === currentUser._id : like._id === currentUser._id
-                    ) ? 'text-red-500' : ''
-                } ${isLiking ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
-            >
-                <Heart className={`w-4 h-4 ${
-                    likes && likes.some(like =>
-                        typeof like === 'string' ? like === currentUser._id : like._id === currentUser._id
-                    ) ? 'fill-red-500' : ''
-                }`} />
+            <button className="p-2 hover:bg-gray-100 rounded-full transition-colors">
+                <svg className="w-4 h-4 text-gray-700" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
+                </svg>
             </button>
+        </div>
 
-            <button
-                onClick={() => setShowComments(!showComments)}
-                className={`flex items-center gap-1 transition-colors cursor-pointer ${
-                    showComments ? 'text-blue-500' : 'text-gray-600 hover:text-blue-500'
-                }`}
-                title={showComments ? 'Hide comments' : 'View comments'}
-            >
-                <MessageCircle className={`w-4 h-4 ${showComments ? 'fill-blue-500' : ''}`}/>
-                {commentsCount > 0 && !showComments && (
-                    <span className="text-xs bg-blue-500 text-white rounded-full min-w-[16px] h-4 flex items-center justify-center px-1">
-                        {commentsCount > 99 ? '99+' : commentsCount}
-                    </span>
+        {/* Post Image/Media - Instagram Style */}
+        {post.image_urls.length > 0 && (
+            <div className='relative aspect-square bg-gray-100'>
+                {post.image_urls.length === 1 ? (
+                    <img 
+                        src={post.image_urls[0]} 
+                        className='w-full h-full object-cover' 
+                        alt="" 
+                    />
+                ) : (
+                    <div className='grid grid-cols-2 gap-0.5 h-full'>
+                        {post.image_urls.slice(0, 4).map((img, index) => (
+                            <div key={index} className="relative">
+                                <img 
+                                    src={img} 
+                                    className='w-full h-full object-cover' 
+                                    alt="" 
+                                />
+                                {index === 3 && post.image_urls.length > 4 && (
+                                    <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+                                        <span className="text-white font-semibold text-lg">+{post.image_urls.length - 4}</span>
+                                    </div>
+                                )}
+                            </div>
+                        ))}
+                    </div>
                 )}
-            </button>
-
-            <button
-                onClick={handleShareClick}
-                className='flex items-center gap-1 hover:text-green-500 transition-colors cursor-pointer'
-            >
-                <Share2 className="w-4 h-4"/>
-                <span>{sharesCount}</span>
-            </button>
-
-            <button
-                onClick={handleAddToStory}
-                className='flex items-center gap-1 hover:text-purple-500 transition-colors cursor-pointer ml-auto'
-                title="Add to Story"
-            >
-                <Plus className="w-4 h-4"/>
-                <span className="text-xs">Story</span>
-            </button>
-        </div>
-
-        {/* Liked By Section */}
-        {likes.length > 0 && (
-            <LikedBy
-                likes={likes}
-                className="px-1 -mt-2"
-            />
+            </div>
         )}
 
-        {/* View Comments Link */}
-        {!showComments && commentsCount > 0 && (
-            <button
-                onClick={() => setShowComments(true)}
-                className="text-sm text-gray-500 hover:text-gray-700 transition-colors px-1"
-            >
-                View all {commentsCount} comments
-            </button>
-        )}
+        {/* Action Buttons - Instagram Style */}
+        <div className='p-3 space-y-3'>
+            <div className='flex items-center justify-between'>
+                <div className='flex items-center gap-4'>
+                    <button
+                        onClick={handleLike}
+                        disabled={isLiking}
+                        className={`transition-transform active:scale-125 ${
+                            likes && likes.some(like =>
+                                typeof like === 'string' ? like === currentUser._id : like._id === currentUser._id
+                            ) ? 'text-red-500' : 'text-gray-900 hover:text-gray-600'
+                        } ${isLiking ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+                    >
+                        <Heart className={`w-6 h-6 ${
+                            likes && likes.some(like =>
+                                typeof like === 'string' ? like === currentUser._id : like._id === currentUser._id
+                            ) ? 'fill-red-500' : ''
+                        }`} />
+                    </button>
 
-        {/* Inline Comments Section */}
-        <div className={`transition-all duration-300 ease-in-out overflow-hidden ${
-            showComments ? 'max-h-none opacity-100' : 'max-h-0 opacity-0'
-        }`}>
-            {showComments && (
-                <InlineCommentsSection
-                    postId={post._id}
-                    initialCommentsCount={commentsCount}
+                    <button
+                        onClick={() => setShowComments(!showComments)}
+                        className='text-gray-900 hover:text-gray-600 transition-colors cursor-pointer'
+                    >
+                        <MessageCircle className="w-6 h-6"/>
+                    </button>
+
+                    <button
+                        onClick={handleShareClick}
+                        className='text-gray-900 hover:text-gray-600 transition-colors cursor-pointer'
+                    >
+                        <Share2 className="w-6 h-6"/>
+                    </button>
+                </div>
+
+                <button
+                    onClick={handleAddToStory}
+                    className='text-gray-900 hover:text-gray-600 transition-colors cursor-pointer'
+                    title="Save"
+                >
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+                    </svg>
+                </button>
+            </div>
+
+            {/* Likes Count - Instagram Style */}
+            {likes.length > 0 && (
+                <LikedBy
+                    likes={likes}
+                    className=""
                 />
             )}
+
+            {/* Caption - Instagram Style */}
+            {post.content && (
+                <div className='text-sm leading-relaxed'>
+                    <span className='font-semibold text-gray-900 mr-1'>{post.user.username}</span>
+                    <span className='text-gray-900' dangerouslySetInnerHTML={{__html: postWithHashtags}}/>
+                </div>
+            )}
+
+            {/* View Comments Link */}
+            {!showComments && commentsCount > 0 && (
+                <button
+                    onClick={() => setShowComments(true)}
+                    className="text-sm text-gray-500 hover:text-gray-700 transition-colors"
+                >
+                    View all {commentsCount} comments
+                </button>
+            )}
+
+            {/* Inline Comments Section */}
+            <div className={`transition-all duration-300 ease-in-out overflow-hidden ${
+                showComments ? 'max-h-none opacity-100' : 'max-h-0 opacity-0'
+            }`}>
+                {showComments && (
+                    <InlineCommentsSection
+                        postId={post._id}
+                        initialCommentsCount={commentsCount}
+                    />
+                )}
+            </div>
         </div>
 
         {/* Share Modal */}
