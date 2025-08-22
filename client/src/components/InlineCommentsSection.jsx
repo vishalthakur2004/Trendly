@@ -43,7 +43,10 @@ const InlineCommentsSection = ({ postId, initialCommentsCount = 0 }) => {
 
     const handleAddComment = async (e) => {
         e.preventDefault();
-        if (!newComment.trim()) return;
+        if (!newComment.trim()) {
+            toast.error('Please enter a comment');
+            return;
+        }
 
         try {
             const token = await getToken();
@@ -53,14 +56,18 @@ const InlineCommentsSection = ({ postId, initialCommentsCount = 0 }) => {
                 token
             })).unwrap();
             setNewComment('');
+            toast.success('Comment added!');
         } catch (error) {
-            toast.error(error);
+            toast.error(error || 'Failed to add comment');
         }
     };
 
     const handleAddReply = async (e, parentCommentId) => {
         e.preventDefault();
-        if (!replyText.trim()) return;
+        if (!replyText.trim()) {
+            toast.error('Please enter a reply');
+            return;
+        }
 
         try {
             const token = await getToken();
@@ -72,8 +79,9 @@ const InlineCommentsSection = ({ postId, initialCommentsCount = 0 }) => {
             })).unwrap();
             setReplyText('');
             setReplyingTo(null);
+            toast.success('Reply added!');
         } catch (error) {
-            toast.error(error);
+            toast.error(error || 'Failed to add reply');
         }
     };
 
