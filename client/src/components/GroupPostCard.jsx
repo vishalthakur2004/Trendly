@@ -288,11 +288,17 @@ const GroupPostCard = ({ post, groupId, canModerate = false }) => {
                     <span>{post.likes_count?.length || 0}</span>
                 </button>
 
-                <button className="flex items-center gap-2 px-3 py-1 rounded-lg text-sm text-gray-600 hover:bg-gray-50 transition-colors">
+                <div className="flex items-center gap-2 px-3 py-1 text-sm text-gray-600">
                     <MessageCircle className="w-4 h-4" />
                     <span>{post.comments_count || 0}</span>
-                </button>
+                </div>
             </div>
+
+            {/* Inline Comments Section */}
+            <InlineCommentsSection
+                postId={post._id}
+                initialCommentsCount={post.comments_count || 0}
+            />
         </div>
     );
 };
