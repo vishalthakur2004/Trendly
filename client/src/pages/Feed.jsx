@@ -49,29 +49,6 @@ const Feed = () => {
 
       {/* Right Sidebar */}
       <div className='max-xl:hidden sticky top-6 w-80'>
-        <div className='bg-white rounded-2xl p-6 shadow-sm border border-gray-100 mb-6'>
-          <h3 className='text-gray-900 font-semibold mb-4 text-lg'>Trending</h3>
-          <div className='space-y-4'>
-            <div className='flex items-center gap-3'>
-              <div className='w-12 h-12 bg-gradient-to-br from-purple-500 to-orange-500 rounded-xl flex items-center justify-center'>
-                <span className='text-white font-bold'>#</span>
-              </div>
-              <div>
-                <p className='font-medium text-gray-900'>#TechTrends</p>
-                <p className='text-sm text-gray-500'>15.2K posts</p>
-              </div>
-            </div>
-            <div className='flex items-center gap-3'>
-              <div className='w-12 h-12 bg-gradient-to-br from-green-500 to-blue-500 rounded-xl flex items-center justify-center'>
-                <span className='text-white font-bold'>#</span>
-              </div>
-              <div>
-                <p className='font-medium text-gray-900'>#Innovation</p>
-                <p className='text-sm text-gray-500'>8.7K posts</p>
-              </div>
-            </div>
-          </div>
-        </div>
         <RecentMessages />
       </div>
     </div>
