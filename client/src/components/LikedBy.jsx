@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { X } from 'lucide-react';
+import { X, Heart } from 'lucide-react';
+import Avatar from './Avatar';
 
 const LikedBy = ({ likes = [], className = '' }) => {
     const navigate = useNavigate();
@@ -26,24 +27,19 @@ const LikedBy = ({ likes = [], className = '' }) => {
     // Handle legacy format (array of user IDs as strings)
     if (typeof likes[0] === 'string') {
         return (
-            <div className={`text-sm text-gray-600 ${className}`}>
-                {likesCount === 1 && isLikedByCurrentUser && (
-                    <span>Liked by you</span>
-                )}
-                {likesCount === 1 && !isLikedByCurrentUser && (
-                    <span>1 like</span>
-                )}
-                {likesCount === 2 && isLikedByCurrentUser && (
-                    <span>Liked by you and 1 other</span>
-                )}
-                {likesCount === 2 && !isLikedByCurrentUser && (
-                    <span>2 likes</span>
-                )}
-                {likesCount > 2 && isLikedByCurrentUser && (
-                    <span>Liked by you and {likesCount - 1} others</span>
-                )}
-                {likesCount > 2 && !isLikedByCurrentUser && (
-                    <span>{likesCount} likes</span>
+            <div className={`flex items-center gap-2 text-sm text-gray-700 ${className}`}>
+                <div className="flex items-center">
+                    <Heart className="w-3 h-3 text-red-500 mr-1" />
+                    <button
+                        onClick={() => setShowAllLikes(true)}
+                        className="font-semibold hover:underline transition-colors"
+                    >
+                        {likesCount.toLocaleString()}
+                        {likesCount === 1 ? ' like' : ' likes'}
+                    </button>
+                </div>
+                {isLikedByCurrentUser && (
+                    <span className="text-gray-600">• You liked this</span>
                 )}
             </div>
         );
@@ -56,14 +52,14 @@ const LikedBy = ({ likes = [], className = '' }) => {
             const isCurrentUser = user._id === currentUser?._id;
             
             return (
-                <span>
+                <span className="text-gray-700">
                     Liked by{' '}
                     {isCurrentUser ? (
                         'you'
                     ) : (
                         <button
                             onClick={() => handleUserClick(user)}
-                            className="font-semibold text-gray-900 hover:underline"
+                            className="font-semibold text-gray-900 hover:underline transition-colors"
                         >
                             {user.full_name || user.username}
                         </button>
@@ -78,14 +74,14 @@ const LikedBy = ({ likes = [], className = '' }) => {
             const user2IsCurrentUser = user2._id === currentUser?._id;
 
             return (
-                <span>
+                <span className="text-gray-700">
                     Liked by{' '}
                     {user1IsCurrentUser ? (
                         'you'
                     ) : (
                         <button
                             onClick={() => handleUserClick(user1)}
-                            className="font-semibold text-gray-900 hover:underline"
+                            className="font-semibold text-gray-900 hover:underline transition-colors"
                         >
                             {user1.full_name || user1.username}
                         </button>
@@ -96,7 +92,7 @@ const LikedBy = ({ likes = [], className = '' }) => {
                     ) : (
                         <button
                             onClick={() => handleUserClick(user2)}
-                            className="font-semibold text-gray-900 hover:underline"
+                            className="font-semibold text-gray-900 hover:underline transition-colors"
                         >
                             {user2.full_name || user2.username}
                         </button>
@@ -113,11 +109,11 @@ const LikedBy = ({ likes = [], className = '' }) => {
             
             if (remainingCount === 1 && otherUser) {
                 return (
-                    <span>
+                    <span className="text-gray-700">
                         Liked by you and{' '}
                         <button
                             onClick={() => handleUserClick(otherUser)}
-                            className="font-semibold text-gray-900 hover:underline"
+                            className="font-semibold text-gray-900 hover:underline transition-colors"
                         >
                             {otherUser.full_name || otherUser.username}
                         </button>
@@ -126,13 +122,13 @@ const LikedBy = ({ likes = [], className = '' }) => {
             }
             
             return (
-                <span>
+                <span className="text-gray-700">
                     Liked by you{otherUser ? ', ' : ' and '}
                     {otherUser && (
                         <>
                             <button
                                 onClick={() => handleUserClick(otherUser)}
-                                className="font-semibold text-gray-900 hover:underline"
+                                className="font-semibold text-gray-900 hover:underline transition-colors"
                             >
                                 {otherUser.full_name || otherUser.username}
                             </button>
@@ -141,7 +137,7 @@ const LikedBy = ({ likes = [], className = '' }) => {
                     )}
                     <button
                         onClick={() => setShowAllLikes(true)}
-                        className="font-semibold text-gray-900 hover:underline"
+                        className="font-semibold text-gray-900 hover:underline transition-colors"
                     >
                         {remainingCount - (otherUser ? 1 : 0)} others
                     </button>
@@ -155,11 +151,11 @@ const LikedBy = ({ likes = [], className = '' }) => {
         
         if (remainingCount === 0) {
             return (
-                <span>
+                <span className="text-gray-700">
                     Liked by{' '}
                     <button
                         onClick={() => handleUserClick(firstUser)}
-                        className="font-semibold text-gray-900 hover:underline"
+                        className="font-semibold text-gray-900 hover:underline transition-colors"
                     >
                         {firstUser.full_name || firstUser.username}
                     </button>
@@ -168,18 +164,18 @@ const LikedBy = ({ likes = [], className = '' }) => {
         }
         
         return (
-            <span>
+            <span className="text-gray-700">
                 Liked by{' '}
                 <button
                     onClick={() => handleUserClick(firstUser)}
-                    className="font-semibold text-gray-900 hover:underline"
+                    className="font-semibold text-gray-900 hover:underline transition-colors"
                 >
                     {firstUser.full_name || firstUser.username}
                 </button>
                 {' and '}
                 <button
                     onClick={() => setShowAllLikes(true)}
-                    className="font-semibold text-gray-900 hover:underline"
+                    className="font-semibold text-gray-900 hover:underline transition-colors"
                 >
                     {remainingCount} others
                 </button>
@@ -187,49 +183,67 @@ const LikedBy = ({ likes = [], className = '' }) => {
         );
     };
 
-    // Show all likes modal
+    // Show all likes modal - Instagram style
     if (showAllLikes) {
         return (
-            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-                <div className="bg-white rounded-xl w-full max-w-md max-h-[70vh] flex flex-col">
+            <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4">
+                <div className="bg-white rounded-2xl w-full max-w-sm max-h-[80vh] flex flex-col shadow-2xl overflow-hidden">
                     {/* Header */}
-                    <div className="flex items-center justify-between p-4 border-b border-gray-200 flex-shrink-0">
-                        <h3 className="text-lg font-semibold text-gray-900">
-                            Likes ({likesCount})
+                    <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 bg-gray-50/50">
+                        <h3 className="text-base font-semibold text-gray-900">
+                            Likes
                         </h3>
                         <button
                             onClick={() => setShowAllLikes(false)}
-                            className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition-colors"
+                            className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition-colors duration-200"
                         >
-                            <X className="w-4 h-4" />
+                            <X className="w-4 h-4 text-gray-600" />
                         </button>
                     </div>
 
+                    {/* Likes count */}
+                    <div className="px-4 py-2 text-sm text-gray-600 border-b border-gray-100">
+                        {likesCount.toLocaleString()} {likesCount === 1 ? 'person' : 'people'} liked this
+                    </div>
+
                     {/* Likes List */}
-                    <div className="flex-1 overflow-y-auto p-4">
-                        <div className="space-y-3">
+                    <div className="flex-1 overflow-y-auto">
+                        <div className="divide-y divide-gray-100">
                             {likes.map((user) => (
                                 <div 
                                     key={user._id} 
-                                    className="flex items-center gap-3 hover:bg-gray-50 p-2 rounded-lg transition-colors cursor-pointer"
+                                    className="flex items-center gap-3 hover:bg-gray-50 p-3 transition-colors cursor-pointer group"
                                     onClick={() => handleUserClick(user)}
                                 >
-                                    <img
-                                        src={user.profile_picture}
-                                        alt={user.full_name}
-                                        className="w-10 h-10 rounded-full object-cover"
-                                    />
-                                    <div className="flex-1">
-                                        <div className="font-semibold text-gray-900">
-                                            {user.full_name || user.username}
+                                    <div className="relative">
+                                        <Avatar
+                                            src={user.profile_picture}
+                                            name={user.full_name}
+                                            size="sm"
+                                            className="ring-2 ring-white group-hover:ring-gray-100 transition-all"
+                                        />
+                                        {user._id === currentUser?._id && (
+                                            <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-blue-500 rounded-full border-2 border-white flex items-center justify-center">
+                                                <div className="w-2 h-2 bg-white rounded-full"></div>
+                                            </div>
+                                        )}
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                        <div className="flex items-center gap-2">
+                                            <span className="font-semibold text-gray-900 truncate">
+                                                {user.full_name || user.username}
+                                            </span>
                                             {user._id === currentUser?._id && (
-                                                <span className="text-sm text-gray-500 font-normal ml-2">(you)</span>
+                                                <span className="text-xs text-blue-600 font-medium bg-blue-50 px-2 py-0.5 rounded-full">
+                                                    You
+                                                </span>
                                             )}
                                         </div>
-                                        <div className="text-sm text-gray-500">
+                                        <div className="text-sm text-gray-500 truncate">
                                             @{user.username}
                                         </div>
                                     </div>
+                                    <Heart className="w-4 h-4 text-red-500 opacity-0 group-hover:opacity-100 transition-opacity" />
                                 </div>
                             ))}
                         </div>
@@ -240,28 +254,50 @@ const LikedBy = ({ likes = [], className = '' }) => {
     }
 
     return (
-        <div className={`text-sm text-gray-600 ${className}`}>
-            <div className="flex items-center gap-2">
-                {/* Small avatars for first few likers */}
-                {likes.slice(0, 3).map((user, index) => (
-                    <button
-                        key={user._id}
-                        onClick={() => handleUserClick(user)}
-                        className="relative"
-                        style={{ marginLeft: index > 0 ? '-6px' : '0' }}
-                    >
-                        <img
-                            src={user.profile_picture}
-                            alt={user.full_name}
-                            className="w-6 h-6 rounded-full object-cover border-2 border-white hover:border-gray-200 transition-colors"
-                        />
-                    </button>
-                ))}
-                
-                {/* Text */}
-                <div className="flex-1">
-                    {renderLikeText()}
+        <div className={`text-sm ${className}`}>
+            <div className="flex items-center gap-3">
+                {/* Stacked avatars - Instagram style */}
+                <div className="flex items-center -space-x-2">
+                    {likes.slice(0, 3).map((user, index) => (
+                        <button
+                            key={user._id}
+                            onClick={() => handleUserClick(user)}
+                            className="relative hover:z-10 transition-transform hover:scale-110 focus:z-10 focus:outline-none"
+                            title={user.full_name || user.username}
+                        >
+                            <img
+                                src={user.profile_picture}
+                                alt={user.full_name}
+                                className="w-6 h-6 rounded-full object-cover border-2 border-white shadow-sm hover:border-gray-100 transition-all duration-200"
+                            />
+                        </button>
+                    ))}
+                    {likesCount > 3 && (
+                        <button
+                            onClick={() => setShowAllLikes(true)}
+                            className="w-6 h-6 rounded-full bg-gray-300 border-2 border-white text-xs font-semibold text-gray-600 flex items-center justify-center hover:bg-gray-400 transition-colors duration-200 shadow-sm"
+                            title={`+${likesCount - 3} more`}
+                        >
+                            +{likesCount - 3 > 9 ? '9+' : likesCount - 3}
+                        </button>
+                    )}
                 </div>
+                
+                {/* Like count and text */}
+                <div className="flex items-center gap-2 flex-1">
+                    <button
+                        onClick={() => setShowAllLikes(true)}
+                        className="font-semibold text-gray-900 hover:underline transition-colors"
+                    >
+                        {likesCount.toLocaleString()}
+                        {likesCount === 1 ? ' like' : ' likes'}
+                    </button>
+                </div>
+            </div>
+            
+            {/* Instagram-style like text */}
+            <div className="mt-1 text-gray-700">
+                {renderLikeText()}
             </div>
         </div>
     );
