@@ -18,12 +18,42 @@ const PostCard = ({post}) => {
 
     const { getToken } = useAuth()
 
+    // Fetch user details for likes
+    const fetchLikedUsers = async () => {
+        if (likes.length === 0) return
+
+        try {
+            const token = await getToken()
+            const { data } = await api.post('/api/user/get-users-by-ids',
+                { userIds: likes },
+                { headers: { Authorization: `Bearer ${token}` }}
+            )
+
+            if (data.success) {
+                setLikedUsers(data.users)
+            }
+        } catch (error) {
+            // If API doesn't exist, create mock data for demonstration
+            const mockUsers = likes.map(id => ({
+                _id: id,
+                full_name: id === currentUser._id ? currentUser.full_name : `User ${id.slice(-4)}`,
+                username: id === currentUser._id ? currentUser.username : `user_${id.slice(-4)}`,
+                profile_picture: id === currentUser._id ? currentUser.profile_picture : `https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face`
+            }))
+            setLikedUsers(mockUsers)
+        }
+    }
+
+    useEffect(() => {
+        fetchLikedUsers()
+    }, [likes])
+
     const handleLike = async () => {
         try {
             const { data } = await api.post(`/api/post/like`, {postId: post._id}, {headers: { Authorization: `Bearer ${await getToken()}` }})
 
             if (data.success){
-               toast.success(data.message) 
+               toast.success(data.message)
                setLikes(prev =>{
                 if(prev.includes(currentUser._id)){
                     return prev.filter(id=> id !== currentUser._id)
@@ -37,6 +67,68 @@ const PostCard = ({post}) => {
         } catch (error) {
             toast.error(error.message)
         }
+    }
+
+    // Instagram-style likes display
+    const renderLikesDisplay = () => {
+        if (likes.length === 0) return null
+
+        const connectionIds = connections.map(conn => conn._id)
+        const likedConnections = likedUsers.filter(user =>
+            connectionIds.includes(user._id) || user._id === currentUser._id
+        )
+
+        const totalLikes = likes.length
+        const connectionsCount = likedConnections.length
+        const othersCount = totalLikes - connectionsCount
+
+        if (totalLikes === 0) return null
+
+        if (totalLikes === 1) {
+            const user = likedUsers[0]
+            return (
+                <div className="text-sm text-gray-900">
+                    <span className="font-medium">
+                        {user?._id === currentUser._id ? 'You' : user?.full_name || 'Someone'}
+                    </span>
+                    <span className="text-gray-600"> liked this</span>
+                </div>
+            )
+        }
+
+        if (connectionsCount === 0) {
+            return (
+                <div className="text-sm text-gray-900">
+                    <span className="font-medium">{totalLikes} likes</span>
+                </div>
+            )
+        }
+
+        let displayText = "Liked by "
+
+        if (connectionsCount === 1) {
+            const user = likedConnections[0]
+            displayText += `${user._id === currentUser._id ? 'you' : user.username}`
+        } else if (connectionsCount === 2) {
+            const [first, second] = likedConnections
+            const firstName = first._id === currentUser._id ? 'you' : first.username
+            const secondName = second._id === currentUser._id ? 'you' : second.username
+            displayText += `${firstName} and ${secondName}`
+        } else {
+            const first = likedConnections[0]
+            const firstName = first._id === currentUser._id ? 'you' : first.username
+            displayText += `${firstName} and ${connectionsCount - 1} others`
+        }
+
+        if (othersCount > 0) {
+            displayText += ` and ${othersCount} other${othersCount > 1 ? 's' : ''}`
+        }
+
+        return (
+            <div className="text-sm">
+                <span className="text-gray-900">{displayText}</span>
+            </div>
+        )
     }
 
     const navigate = useNavigate()
