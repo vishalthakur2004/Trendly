@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Heart, MessageCircle, Send } from 'lucide-react';
+import { Heart, MessageCircle, Send, Trash2, MoreHorizontal } from 'lucide-react';
 import moment from 'moment';
 import toast from 'react-hot-toast';
 import { useAuth } from '@clerk/clerk-react';
-import { 
-    fetchComments, 
-    addComment, 
-    likeComment, 
-    updateCommentLike 
+import {
+    fetchComments,
+    addComment,
+    likeComment,
+    deleteComment,
+    updateCommentLike
 } from '../features/comments/commentsSlice';
 
 const InlineCommentsSection = ({ postId, initialCommentsCount = 0 }) => {
