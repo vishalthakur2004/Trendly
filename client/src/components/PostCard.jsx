@@ -132,10 +132,16 @@ const PostCard = ({post}) => {
                 onClick={handleLike}
                 disabled={isLiking}
                 className={`flex items-center gap-1 hover:text-red-500 transition-colors ${
-                    likes.includes(currentUser._id) ? 'text-red-500' : ''
+                    likes && likes.some(like =>
+                        typeof like === 'string' ? like === currentUser._id : like._id === currentUser._id
+                    ) ? 'text-red-500' : ''
                 } ${isLiking ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
             >
-                <Heart className={`w-4 h-4 ${likes.includes(currentUser._id) ? 'fill-red-500' : ''}`} />
+                <Heart className={`w-4 h-4 ${
+                    likes && likes.some(like =>
+                        typeof like === 'string' ? like === currentUser._id : like._id === currentUser._id
+                    ) ? 'fill-red-500' : ''
+                }`} />
             </button>
 
             <button
