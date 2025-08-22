@@ -21,6 +21,7 @@ import {
     moderatePost
 } from '../features/groups/groupPostsSlice';
 import InlineCommentsSection from './InlineCommentsSection';
+import LikedBy from './LikedBy';
 
 const GroupPostCard = ({ post, groupId, canModerate = false }) => {
     const dispatch = useDispatch();
@@ -29,6 +30,7 @@ const GroupPostCard = ({ post, groupId, canModerate = false }) => {
     
     const [showMenu, setShowMenu] = useState(false);
     const [isLiking, setIsLiking] = useState(false);
+    const [showComments, setShowComments] = useState(false);
 
     const isLiked = post.likes_count?.includes(currentUser?._id);
     const isAuthor = post.user?._id === currentUser?._id;
@@ -278,27 +280,58 @@ const GroupPostCard = ({ post, groupId, canModerate = false }) => {
                 <button
                     onClick={handleLike}
                     disabled={isLiking}
-                    className={`flex items-center gap-2 px-3 py-1 rounded-lg text-sm transition-colors ${
-                        isLiked 
-                            ? 'text-red-600 bg-red-50 hover:bg-red-100' 
-                            : 'text-gray-600 hover:bg-gray-50'
-                    } disabled:opacity-50`}
+                    className={`flex items-center gap-1 hover:text-red-500 transition-colors ${
+                        isLiked ? 'text-red-500' : 'text-gray-600'
+                    } ${isLiking ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
                 >
-                    <Heart className={`w-4 h-4 ${isLiked ? 'fill-current' : ''}`} />
-                    <span>{post.likes_count?.length || 0}</span>
+                    <Heart className={`w-4 h-4 ${isLiked ? 'fill-red-500' : ''}`} />
                 </button>
 
-                <div className="flex items-center gap-2 px-3 py-1 text-sm text-gray-600">
-                    <MessageCircle className="w-4 h-4" />
-                    <span>{post.comments_count || 0}</span>
-                </div>
+                <button
+                    onClick={() => setShowComments(!showComments)}
+                    className={`flex items-center gap-1 transition-colors cursor-pointer ${
+                        showComments ? 'text-blue-500' : 'text-gray-600 hover:text-blue-500'
+                    }`}
+                    title={showComments ? 'Hide comments' : 'View comments'}
+                >
+                    <MessageCircle className={`w-4 h-4 ${showComments ? 'fill-blue-500' : ''}`}/>
+                    {(post.comments_count || 0) > 0 && !showComments && (
+                        <span className="text-xs bg-blue-500 text-white rounded-full min-w-[16px] h-4 flex items-center justify-center px-1">
+                            {(post.comments_count || 0) > 99 ? '99+' : (post.comments_count || 0)}
+                        </span>
+                    )}
+                </button>
             </div>
 
+            {/* Liked By Section */}
+            {post.likes_count && post.likes_count.length > 0 && (
+                <LikedBy
+                    likes={post.likes_count}
+                    className="px-1 mt-2"
+                />
+            )}
+
+            {/* View Comments Link */}
+            {!showComments && (post.comments_count || 0) > 0 && (
+                <button
+                    onClick={() => setShowComments(true)}
+                    className="text-sm text-gray-500 hover:text-gray-700 transition-colors px-1 mt-2"
+                >
+                    View all {post.comments_count} comments
+                </button>
+            )}
+
             {/* Inline Comments Section */}
-            <InlineCommentsSection
-                postId={post._id}
-                initialCommentsCount={post.comments_count || 0}
-            />
+            <div className={`transition-all duration-300 ease-in-out overflow-hidden ${
+                showComments ? 'max-h-none opacity-100' : 'max-h-0 opacity-0'
+            }`}>
+                {showComments && (
+                    <InlineCommentsSection
+                        postId={post._id}
+                        initialCommentsCount={post.comments_count || 0}
+                    />
+                )}
+            </div>
         </div>
     );
 };

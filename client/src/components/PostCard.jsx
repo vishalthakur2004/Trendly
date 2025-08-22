@@ -10,6 +10,7 @@ import InlineCommentsSection from './InlineCommentsSection'
 import ShareModal from './ShareModal'
 import ShareToStoryModal from './ShareToStoryModal'
 import Avatar from './Avatar'
+import LikedBy from './LikedBy'
 
 const PostCard = ({post}) => {
 
@@ -20,6 +21,7 @@ const PostCard = ({post}) => {
     const [showShareModal, setShowShareModal] = useState(false)
     const [showShareToStoryModal, setShowShareToStoryModal] = useState(false)
     const [isLiking, setIsLiking] = useState(false)
+    const [showComments, setShowComments] = useState(false)
 
     const currentUser = useSelector((state) => state.user.value)
     const { getToken } = useAuth()
@@ -118,13 +120,22 @@ const PostCard = ({post}) => {
                 } ${isLiking ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
             >
                 <Heart className={`w-4 h-4 ${likes.includes(currentUser._id) ? 'fill-red-500' : ''}`} />
-                <span>{likes.length}</span>
             </button>
 
-            <div className='flex items-center gap-1 text-gray-600'>
-                <MessageCircle className="w-4 h-4"/>
-                <span>{commentsCount}</span>
-            </div>
+            <button
+                onClick={() => setShowComments(!showComments)}
+                className={`flex items-center gap-1 transition-colors cursor-pointer ${
+                    showComments ? 'text-blue-500' : 'text-gray-600 hover:text-blue-500'
+                }`}
+                title={showComments ? 'Hide comments' : 'View comments'}
+            >
+                <MessageCircle className={`w-4 h-4 ${showComments ? 'fill-blue-500' : ''}`}/>
+                {commentsCount > 0 && !showComments && (
+                    <span className="text-xs bg-blue-500 text-white rounded-full min-w-[16px] h-4 flex items-center justify-center px-1">
+                        {commentsCount > 99 ? '99+' : commentsCount}
+                    </span>
+                )}
+            </button>
 
             <button
                 onClick={handleShareClick}
@@ -144,11 +155,35 @@ const PostCard = ({post}) => {
             </button>
         </div>
 
+        {/* Liked By Section */}
+        {likes.length > 0 && (
+            <LikedBy
+                likes={likes}
+                className="px-1 -mt-2"
+            />
+        )}
+
+        {/* View Comments Link */}
+        {!showComments && commentsCount > 0 && (
+            <button
+                onClick={() => setShowComments(true)}
+                className="text-sm text-gray-500 hover:text-gray-700 transition-colors px-1"
+            >
+                View all {commentsCount} comments
+            </button>
+        )}
+
         {/* Inline Comments Section */}
-        <InlineCommentsSection
-            postId={post._id}
-            initialCommentsCount={commentsCount}
-        />
+        <div className={`transition-all duration-300 ease-in-out overflow-hidden ${
+            showComments ? 'max-h-none opacity-100' : 'max-h-0 opacity-0'
+        }`}>
+            {showComments && (
+                <InlineCommentsSection
+                    postId={post._id}
+                    initialCommentsCount={commentsCount}
+                />
+            )}
+        </div>
 
         {/* Share Modal */}
         <ShareModal
