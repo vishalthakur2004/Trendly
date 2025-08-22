@@ -271,6 +271,98 @@ export const acceptConnectionRequest = async (req, res) => {
 }
 
 
+// Get Suggested Connections
+export const getSuggestedConnections = async (req, res) => {
+    try {
+        const { userId } = req.auth();
+        const { limit = 20 } = req.query;
+
+        // Get current user with connections and pending requests
+        const currentUser = await User.findById(userId).populate('connections following');
+
+        if (!currentUser) {
+            return res.json({ success: false, message: "User not found" });
+        }
+
+        // Get all connection IDs to exclude (connections + following + pending requests)
+        const connectedUserIds = currentUser.connections.map(conn => conn._id.toString());
+        const followingUserIds = currentUser.following.map(follow => follow._id.toString());
+
+        // Get pending connection requests (both sent and received)
+        const pendingConnections = await Connection.find({
+            $or: [
+                { from_user_id: userId, status: 'pending' },
+                { to_user_id: userId, status: 'pending' }
+            ]
+        });
+
+        const pendingUserIds = pendingConnections.map(conn => {
+            return conn.from_user_id.toString() === userId
+                ? conn.to_user_id.toString()
+                : conn.from_user_id.toString();
+        });
+
+        // Combine all user IDs to exclude
+        const excludeUserIds = [
+            userId,
+            ...connectedUserIds,
+            ...followingUserIds,
+            ...pendingUserIds
+        ];
+
+        // Find suggested users
+        let suggestedUsers = [];
+
+        // Strategy 1: Users with mutual connections
+        if (connectedUserIds.length > 0) {
+            const mutualConnectionUsers = await User.find({
+                _id: { $nin: excludeUserIds },
+                connections: { $in: connectedUserIds }
+            }).limit(parseInt(limit) / 2);
+
+            suggestedUsers = [...mutualConnectionUsers];
+        }
+
+        // Strategy 2: If we need more suggestions, get random active users
+        if (suggestedUsers.length < parseInt(limit)) {
+            const remainingLimit = parseInt(limit) - suggestedUsers.length;
+            const randomUsers = await User.find({
+                _id: { $nin: [...excludeUserIds, ...suggestedUsers.map(u => u._id)] }
+            })
+            .sort({ createdAt: -1 }) // Recently joined users
+            .limit(remainingLimit);
+
+            suggestedUsers = [...suggestedUsers, ...randomUsers];
+        }
+
+        // Add connection stats for each suggested user
+        const suggestedUsersWithStats = await Promise.all(
+            suggestedUsers.map(async (user) => {
+                const mutualConnections = await User.countDocuments({
+                    _id: { $in: connectedUserIds },
+                    connections: user._id
+                });
+
+                return {
+                    ...user.toObject(),
+                    mutualConnections,
+                    connectionStatus: 'none' // none, pending, connected
+                };
+            })
+        );
+
+        res.json({
+            success: true,
+            suggestedUsers: suggestedUsersWithStats,
+            count: suggestedUsersWithStats.length
+        });
+
+    } catch (error) {
+        console.error('Error getting suggested connections:', error);
+        res.json({ success: false, message: "Failed to load suggested connections" });
+    }
+};
+
 // Get User Profiles
 export const getUserProfiles = async (req, res) =>{
     try {
