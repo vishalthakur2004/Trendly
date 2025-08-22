@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { BadgeCheck, Heart, MessageCircle, Share2 } from 'lucide-react'
 import moment from 'moment'
 import { dummyUserData } from '../assets/assets'
@@ -12,7 +12,9 @@ const PostCard = ({post}) => {
 
     const postWithHashtags = post.content.replace(/(#\w+)/g, '<span class="text-green-600 font-medium">$1</span>')
     const [likes, setLikes] = useState(post.likes_count)
+    const [likedUsers, setLikedUsers] = useState([])
     const currentUser = useSelector((state) => state.user.value)
+    const connections = useSelector((state) => state.connections.connections)
 
     const { getToken } = useAuth()
 
