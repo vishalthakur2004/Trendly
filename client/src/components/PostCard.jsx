@@ -157,19 +157,45 @@ const PostCard = ({post}) => {
        </div>
 
         {/* Actions */}
-        <div className='flex items-center gap-6 text-gray-600 pt-3 border-t border-gray-100'>
+        <div className='flex items-center gap-6 text-gray-600'>
             <div className='flex items-center gap-2 hover:bg-red-50 p-2 rounded-xl transition-colors cursor-pointer group' onClick={handleLike}>
                 <Heart className={`w-5 h-5 group-hover:text-red-500 transition-colors ${likes.includes(currentUser._id) && 'text-red-500 fill-red-500'}`}/>
-                <span className='font-medium'>{likes.length}</span>
             </div>
             <div className='flex items-center gap-2 hover:bg-blue-50 p-2 rounded-xl transition-colors cursor-pointer group'>
                 <MessageCircle className="w-5 h-5 group-hover:text-blue-500 transition-colors"/>
-                <span className='font-medium'>12</span>
             </div>
             <div className='flex items-center gap-2 hover:bg-green-50 p-2 rounded-xl transition-colors cursor-pointer group'>
                 <Share2 className="w-5 h-5 group-hover:text-green-500 transition-colors"/>
-                <span className='font-medium'>7</span>
             </div>
+        </div>
+
+        {/* Instagram-style Likes Display */}
+        {likes.length > 0 && (
+            <div className='flex items-center gap-3'>
+                {/* Profile pictures of recent likers */}
+                <div className='flex -space-x-2'>
+                    {likedUsers.slice(0, 3).map((user, index) => (
+                        <img
+                            key={user._id}
+                            src={user.profile_picture}
+                            alt={user.full_name}
+                            className='w-6 h-6 rounded-full ring-2 ring-white border border-gray-200'
+                            title={user.full_name}
+                        />
+                    ))}
+                </div>
+                {/* Likes text */}
+                <div className='flex-1'>
+                    {renderLikesDisplay()}
+                </div>
+            </div>
+        )}
+
+        {/* Comments Preview */}
+        <div className='flex items-center gap-4 text-gray-500 text-sm pt-2 border-t border-gray-100'>
+            <span className='cursor-pointer hover:text-gray-700'>View all 12 comments</span>
+            <span>•</span>
+            <span>7 shares</span>
         </div>
     </div>
   )
