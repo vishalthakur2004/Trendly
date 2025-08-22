@@ -133,8 +133,15 @@ const StoriesBar = () => {
 
         {/* Add Story Modal */}
         {showModal && <StoryModal setShowModal={setShowModal} fetchStories={fetchStories}/>}
+
         {/* View Story Modal */}
-        {viewStory && <StoryViewer viewStory={viewStory} setViewStory={setViewStory}/>}
+        {viewerData && (
+            <StoryViewer
+                stories={viewerData.stories}
+                initialStoryIndex={viewerData.initialStoryIndex}
+                onClose={() => setViewerData(null)}
+            />
+        )}
       
     </div>
   )
