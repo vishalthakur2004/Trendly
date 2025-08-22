@@ -134,18 +134,20 @@ const InlineCommentsSection = ({ postId, initialCommentsCount = 0 }) => {
     const CommentItem = ({ comment, isReply = false, isCompact = false }) => {
         const isLiked = comment.likes?.includes(currentUser._id);
         const likesCount = comment.likes?.length || 0;
+        const canDelete = comment.user._id === currentUser._id;
+        const [showMenu, setShowMenu] = useState(false);
 
         return (
-            <div className={`${isReply ? 'ml-6 mt-1' : 'mt-2'} ${isCompact ? 'py-1' : 'py-2'}`}>
+            <div className={`${isReply ? 'ml-6 mt-1' : 'mt-2'} ${isCompact ? 'py-1' : 'py-2'} group`}>
                 <div className="flex gap-3">
                     {!isCompact && (
-                        <img 
-                            src={comment.user.profile_picture} 
+                        <img
+                            src={comment.user.profile_picture}
                             alt={comment.user.full_name}
                             className="w-6 h-6 rounded-full object-cover flex-shrink-0"
                         />
                     )}
-                    
+
                     <div className="flex-1 min-w-0">
                         <div className="flex items-start gap-2">
                             <div className="flex-1">
@@ -157,35 +159,46 @@ const InlineCommentsSection = ({ postId, initialCommentsCount = 0 }) => {
                                         {comment.content}
                                     </span>
                                 </div>
-                                
+
                                 <div className="flex items-center gap-3 mt-1">
                                     <span className="text-xs text-gray-500">
                                         {moment(comment.createdAt).fromNow()}
                                     </span>
-                                    
+
                                     {likesCount > 0 && (
                                         <span className="text-xs text-gray-500 font-medium">
                                             {likesCount} {likesCount === 1 ? 'like' : 'likes'}
                                         </span>
                                     )}
-                                    
+
                                     {!isReply && (
-                                        <button 
+                                        <button
                                             onClick={() => setReplyingTo(replyingTo === comment._id ? null : comment._id)}
-                                            className="text-xs text-gray-500 font-medium hover:text-gray-700"
+                                            className="text-xs text-gray-500 font-medium hover:text-gray-700 transition-colors"
                                         >
                                             Reply
                                         </button>
                                     )}
+
+                                    {canDelete && (
+                                        <button
+                                            onClick={() => handleDeleteComment(comment._id)}
+                                            className="text-xs text-gray-500 font-medium hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100"
+                                        >
+                                            Delete
+                                        </button>
+                                    )}
                                 </div>
                             </div>
-                            
-                            <button 
-                                onClick={() => handleLikeComment(comment._id)}
-                                className={`flex-shrink-0 p-1 ${isLiked ? 'text-red-500' : 'text-gray-400 hover:text-red-500'} transition-colors`}
-                            >
-                                <Heart className={`w-3 h-3 ${isLiked ? 'fill-current' : ''}`} />
-                            </button>
+
+                            <div className="flex items-center gap-1">
+                                <button
+                                    onClick={() => handleLikeComment(comment._id)}
+                                    className={`flex-shrink-0 p-1 ${isLiked ? 'text-red-500' : 'text-gray-400 hover:text-red-500'} transition-colors`}
+                                >
+                                    <Heart className={`w-3 h-3 ${isLiked ? 'fill-current' : ''}`} />
+                                </button>
+                            </div>
                         </div>
                         
                         {/* Reply Form */}
