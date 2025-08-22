@@ -109,6 +109,12 @@ const Notifications = () => {
                 return '👍';
             case 'mention':
                 return '@';
+            case 'call':
+                return '📞';
+            case 'missed_call':
+                return '📵';
+            case 'group_call':
+                return '👥📞';
             default:
                 return '🔔';
         }

@@ -126,12 +126,33 @@ export const updateCallStatus = async (req, res) => {
             call.started_at = new Date();
         }
 
-        if (status === 'ended') {
+        if (status === 'ended' || status === 'missed' || status === 'declined') {
             call.ended_at = new Date();
             if (duration) {
                 call.duration = duration;
             } else if (call.started_at) {
                 call.duration = Math.floor((Date.now() - call.started_at.getTime()) / 1000);
+            }
+
+            // Create missed call notifications for participants who didn't answer
+            if (status === 'missed') {
+                const caller = await User.findById(call.initiator);
+                if (caller) {
+                    for (const participantId of call.participants) {
+                        await createNotification({
+                            recipient: participantId,
+                            sender: call.initiator,
+                            type: 'missed_call',
+                            content: `Missed ${call.call_type} call from ${caller.full_name}`,
+                            metadata: {
+                                callId: call.call_id,
+                                callType: call.call_type,
+                                isGroupCall: call.is_group_call,
+                                missedAt: new Date()
+                            }
+                        });
+                    }
+                }
             }
         }
 

@@ -35,7 +35,7 @@ const SuggestedUserCard = ({ user }) => {
         }
 
         try {
-            const { data } = await api.post('/api/user/send-connection', { id: user._id }, {
+            const { data } = await api.post('/api/user/connect', { id: user._id }, {
                 headers: { Authorization: `Bearer ${await getToken()}` }
             })
             if (data.success) {

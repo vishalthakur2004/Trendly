@@ -6,7 +6,7 @@ import { useSelector } from 'react-redux';
 import { useAuth } from '@clerk/clerk-react'
 import api from '../api/axios'
 import toast from 'react-hot-toast'
-import CommentsSection from './CommentsSection'
+import InlineCommentsSection from './InlineCommentsSection'
 import ShareModal from './ShareModal'
 import ShareToStoryModal from './ShareToStoryModal'
 
@@ -16,7 +16,6 @@ const PostCard = ({post}) => {
     const [likes, setLikes] = useState(post.likes_count)
     const [commentsCount, setCommentsCount] = useState(post.comments_count || 0)
     const [sharesCount, setSharesCount] = useState(post.shares_count || 0)
-    const [showComments, setShowComments] = useState(false)
     const [showShareModal, setShowShareModal] = useState(false)
     const [showShareToStoryModal, setShowShareToStoryModal] = useState(false)
     const [isLiking, setIsLiking] = useState(false)
@@ -71,10 +70,6 @@ const PostCard = ({post}) => {
         }
     }
 
-    const handleCommentsClick = () => {
-        setShowComments(true);
-    }
-
     const handleShareClick = () => {
         setShowShareModal(true);
     }
@@ -121,13 +116,10 @@ const PostCard = ({post}) => {
                 <span>{likes.length}</span>
             </button>
 
-            <button
-                onClick={handleCommentsClick}
-                className='flex items-center gap-1 hover:text-blue-500 transition-colors cursor-pointer'
-            >
+            <div className='flex items-center gap-1 text-gray-600'>
                 <MessageCircle className="w-4 h-4"/>
                 <span>{commentsCount}</span>
-            </button>
+            </div>
 
             <button
                 onClick={handleShareClick}
@@ -147,11 +139,10 @@ const PostCard = ({post}) => {
             </button>
         </div>
 
-        {/* Comments Section Modal */}
-        <CommentsSection
+        {/* Inline Comments Section */}
+        <InlineCommentsSection
             postId={post._id}
-            isOpen={showComments}
-            onClose={() => setShowComments(false)}
+            initialCommentsCount={commentsCount}
         />
 
         {/* Share Modal */}
