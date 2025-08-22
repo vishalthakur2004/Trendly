@@ -14,6 +14,7 @@ const PostCard = ({post}) => {
     const postWithHashtags = post.content.replace(/(#\w+)/g, '<span class="text-green-600 font-medium">$1</span>')
     const [likes, setLikes] = useState(post.likes_count)
     const [likedUsers, setLikedUsers] = useState([])
+    const [showLikesModal, setShowLikesModal] = useState(false)
     const currentUser = useSelector((state) => state.user.value)
     const connections = useSelector((state) => state.connections.connections)
 
