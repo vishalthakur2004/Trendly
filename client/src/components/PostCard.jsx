@@ -10,6 +10,7 @@ import InlineCommentsSection from './InlineCommentsSection'
 import ShareModal from './ShareModal'
 import ShareToStoryModal from './ShareToStoryModal'
 import Avatar from './Avatar'
+import LikedBy from './LikedBy'
 
 const PostCard = ({post}) => {
 
@@ -20,6 +21,7 @@ const PostCard = ({post}) => {
     const [showShareModal, setShowShareModal] = useState(false)
     const [showShareToStoryModal, setShowShareToStoryModal] = useState(false)
     const [isLiking, setIsLiking] = useState(false)
+    const [showComments, setShowComments] = useState(false)
 
     const currentUser = useSelector((state) => state.user.value)
     const { getToken } = useAuth()
@@ -118,13 +120,14 @@ const PostCard = ({post}) => {
                 } ${isLiking ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
             >
                 <Heart className={`w-4 h-4 ${likes.includes(currentUser._id) ? 'fill-red-500' : ''}`} />
-                <span>{likes.length}</span>
             </button>
 
-            <div className='flex items-center gap-1 text-gray-600'>
+            <button
+                onClick={() => setShowComments(!showComments)}
+                className='flex items-center gap-1 hover:text-blue-500 transition-colors cursor-pointer'
+            >
                 <MessageCircle className="w-4 h-4"/>
-                <span>{commentsCount}</span>
-            </div>
+            </button>
 
             <button
                 onClick={handleShareClick}
@@ -144,11 +147,21 @@ const PostCard = ({post}) => {
             </button>
         </div>
 
+        {/* Liked By Section */}
+        {likes.length > 0 && (
+            <LikedBy
+                likes={likes}
+                className="px-1 -mt-2"
+            />
+        )}
+
         {/* Inline Comments Section */}
-        <InlineCommentsSection
-            postId={post._id}
-            initialCommentsCount={commentsCount}
-        />
+        {showComments && (
+            <InlineCommentsSection
+                postId={post._id}
+                initialCommentsCount={commentsCount}
+            />
+        )}
 
         {/* Share Modal */}
         <ShareModal
