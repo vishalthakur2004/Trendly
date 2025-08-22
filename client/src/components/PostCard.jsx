@@ -6,7 +6,7 @@ import { useSelector } from 'react-redux';
 import { useAuth } from '@clerk/clerk-react'
 import api from '../api/axios'
 import toast from 'react-hot-toast'
-import CommentsSection from './CommentsSection'
+import InlineCommentsSection from './InlineCommentsSection'
 import ShareModal from './ShareModal'
 import ShareToStoryModal from './ShareToStoryModal'
 
