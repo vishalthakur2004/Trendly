@@ -201,7 +201,7 @@ const InlineCommentsSection = ({ postId, initialCommentsCount = 0 }) => {
                                             onClick={() => setReplyingTo(replyingTo === comment._id ? null : comment._id)}
                                             className="text-xs text-gray-500 font-medium hover:text-gray-700 transition-colors"
                                         >
-                                            Reply
+                                            {replyingTo === comment._id ? 'Cancel' : 'Reply'}
                                         </button>
                                     )}
 
