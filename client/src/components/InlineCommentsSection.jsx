@@ -50,6 +50,9 @@ const InlineCommentsSection = ({ postId, initialCommentsCount = 0 }) => {
             return;
         }
 
+        if (isSubmitting) return;
+
+        setIsSubmitting(true);
         try {
             const token = await getToken();
             await dispatch(addComment({
@@ -58,9 +61,11 @@ const InlineCommentsSection = ({ postId, initialCommentsCount = 0 }) => {
                 token
             })).unwrap();
             setNewComment('');
-            toast.success('Comment added!');
+            // Don't show success toast for comments, it's too noisy
         } catch (error) {
             toast.error(error || 'Failed to add comment');
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -71,6 +76,9 @@ const InlineCommentsSection = ({ postId, initialCommentsCount = 0 }) => {
             return;
         }
 
+        if (isSubmittingReply) return;
+
+        setIsSubmittingReply(true);
         try {
             const token = await getToken();
             await dispatch(addComment({
@@ -81,9 +89,11 @@ const InlineCommentsSection = ({ postId, initialCommentsCount = 0 }) => {
             })).unwrap();
             setReplyText('');
             setReplyingTo(null);
-            toast.success('Reply added!');
+            // Don't show success toast for replies, it's too noisy
         } catch (error) {
             toast.error(error || 'Failed to add reply');
+        } finally {
+            setIsSubmittingReply(false);
         }
     };
 
