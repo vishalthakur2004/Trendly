@@ -302,14 +302,25 @@ const InlineCommentsSection = ({ postId, initialCommentsCount = 0 }) => {
             
             {/* Comments List */}
             {commentsState?.loading && !comments.length ? (
-                <div className="text-sm text-gray-500 py-2">Loading comments...</div>
+                <div className="text-sm text-gray-500 py-2 flex items-center gap-2">
+                    <div className="w-4 h-4 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin"></div>
+                    Loading comments...
+                </div>
             ) : commentsState?.error ? (
-                <div className="text-sm text-red-500 py-2">{commentsState.error}</div>
+                <div className="text-sm text-red-500 py-2 bg-red-50 px-3 rounded-lg">
+                    {commentsState.error}
+                    <button
+                        onClick={() => loadComments()}
+                        className="ml-2 text-blue-500 hover:text-blue-700 underline"
+                    >
+                        Try again
+                    </button>
+                </div>
             ) : (
                 <div>
                     {displayComments.map(comment => (
-                        <CommentItem 
-                            key={comment._id} 
+                        <CommentItem
+                            key={comment._id}
                             comment={comment}
                             isCompact={!showAllComments && comments.length > 3}
                         />
