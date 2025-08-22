@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import { X } from 'lucide-react';
 
 const LikedBy = ({ likes = [], className = '' }) => {
     const navigate = useNavigate();
@@ -11,16 +12,18 @@ const LikedBy = ({ likes = [], className = '' }) => {
         return null;
     }
 
-    // Handle the case where likes is an array of user IDs (current implementation)
-    // For now, we'll just show the count since we don't have user objects
     const likesCount = likes.length;
-    const isLikedByCurrentUser = likes.includes(currentUser?._id);
+    const isLikedByCurrentUser = likes.some(user => 
+        typeof user === 'string' ? user === currentUser?._id : user._id === currentUser?._id
+    );
 
-    const handleUserClick = (userId) => {
+    const handleUserClick = (user) => {
+        const userId = typeof user === 'string' ? user : user._id;
         navigate(`/profile/${userId}`);
+        setShowAllLikes(false);
     };
 
-    // If we only have user IDs, show a simplified version
+    // Handle legacy format (array of user IDs as strings)
     if (typeof likes[0] === 'string') {
         return (
             <div className={`text-sm text-gray-600 ${className}`}>
@@ -46,12 +49,9 @@ const LikedBy = ({ likes = [], className = '' }) => {
         );
     }
 
-    // If we have user objects (future enhancement)
-    const displayLikes = showAllLikes ? likes : likes.slice(0, 2);
-    const remainingCount = likes.length - displayLikes.length;
-
+    // Enhanced format with user objects - Instagram-like display
     const renderLikeText = () => {
-        if (likes.length === 1) {
+        if (likesCount === 1) {
             const user = likes[0];
             const isCurrentUser = user._id === currentUser?._id;
             
@@ -62,7 +62,7 @@ const LikedBy = ({ likes = [], className = '' }) => {
                         'you'
                     ) : (
                         <button
-                            onClick={() => handleUserClick(user._id)}
+                            onClick={() => handleUserClick(user)}
                             className="font-semibold text-gray-900 hover:underline"
                         >
                             {user.full_name || user.username}
@@ -72,7 +72,7 @@ const LikedBy = ({ likes = [], className = '' }) => {
             );
         }
 
-        if (likes.length === 2) {
+        if (likesCount === 2) {
             const [user1, user2] = likes;
             const user1IsCurrentUser = user1._id === currentUser?._id;
             const user2IsCurrentUser = user2._id === currentUser?._id;
@@ -84,7 +84,7 @@ const LikedBy = ({ likes = [], className = '' }) => {
                         'you'
                     ) : (
                         <button
-                            onClick={() => handleUserClick(user1._id)}
+                            onClick={() => handleUserClick(user1)}
                             className="font-semibold text-gray-900 hover:underline"
                         >
                             {user1.full_name || user1.username}
@@ -95,7 +95,7 @@ const LikedBy = ({ likes = [], className = '' }) => {
                         'you'
                     ) : (
                         <button
-                            onClick={() => handleUserClick(user2._id)}
+                            onClick={() => handleUserClick(user2)}
                             className="font-semibold text-gray-900 hover:underline"
                         >
                             {user2.full_name || user2.username}
@@ -105,99 +105,135 @@ const LikedBy = ({ likes = [], className = '' }) => {
             );
         }
 
-        // More than 2 likes
-        const firstTwo = displayLikes;
-        const hasCurrentUser = likes.some(user => user._id === currentUser?._id);
-        
-        if (hasCurrentUser && !showAllLikes) {
-            // Show "you and X others"
-            const otherUsers = likes.filter(user => user._id !== currentUser?._id).slice(0, 1);
-            const remainingOthers = likes.length - 1 - otherUsers.length;
+        // More than 2 likes - Instagram style
+        if (isLikedByCurrentUser) {
+            // Find other user (not current user) to show
+            const otherUser = likes.find(user => user._id !== currentUser?._id);
+            const remainingCount = likesCount - 1;
+            
+            if (remainingCount === 1 && otherUser) {
+                return (
+                    <span>
+                        Liked by you and{' '}
+                        <button
+                            onClick={() => handleUserClick(otherUser)}
+                            className="font-semibold text-gray-900 hover:underline"
+                        >
+                            {otherUser.full_name || otherUser.username}
+                        </button>
+                    </span>
+                );
+            }
             
             return (
                 <span>
-                    Liked by you
-                    {otherUsers.length > 0 && (
+                    Liked by you{otherUser ? ', ' : ' and '}
+                    {otherUser && (
                         <>
-                            {', '}
                             <button
-                                onClick={() => handleUserClick(otherUsers[0]._id)}
+                                onClick={() => handleUserClick(otherUser)}
                                 className="font-semibold text-gray-900 hover:underline"
                             >
-                                {otherUsers[0].full_name || otherUsers[0].username}
+                                {otherUser.full_name || otherUser.username}
                             </button>
+                            {' and '}
                         </>
                     )}
-                    {' and '}
                     <button
-                        onClick={() => setShowAllLikes(!showAllLikes)}
+                        onClick={() => setShowAllLikes(true)}
                         className="font-semibold text-gray-900 hover:underline"
                     >
-                        {remainingOthers} others
+                        {remainingCount - (otherUser ? 1 : 0)} others
                     </button>
                 </span>
             );
         }
 
-        // Show first two users and X others
+        // Not liked by current user - show first user and others
+        const [firstUser] = likes;
+        const remainingCount = likesCount - 1;
+        
+        if (remainingCount === 0) {
+            return (
+                <span>
+                    Liked by{' '}
+                    <button
+                        onClick={() => handleUserClick(firstUser)}
+                        className="font-semibold text-gray-900 hover:underline"
+                    >
+                        {firstUser.full_name || firstUser.username}
+                    </button>
+                </span>
+            );
+        }
+        
         return (
             <span>
                 Liked by{' '}
-                {firstTwo.map((user, index) => (
-                    <span key={user._id}>
-                        <button
-                            onClick={() => handleUserClick(user._id)}
-                            className="font-semibold text-gray-900 hover:underline"
-                        >
-                            {user.full_name || user.username}
-                        </button>
-                        {index === 0 && firstTwo.length > 1 && ', '}
-                    </span>
-                ))}
-                {remainingCount > 0 && (
-                    <>
-                        {' and '}
-                        <button
-                            onClick={() => setShowAllLikes(!showAllLikes)}
-                            className="font-semibold text-gray-900 hover:underline"
-                        >
-                            {remainingCount} others
-                        </button>
-                    </>
-                )}
+                <button
+                    onClick={() => handleUserClick(firstUser)}
+                    className="font-semibold text-gray-900 hover:underline"
+                >
+                    {firstUser.full_name || firstUser.username}
+                </button>
+                {' and '}
+                <button
+                    onClick={() => setShowAllLikes(true)}
+                    className="font-semibold text-gray-900 hover:underline"
+                >
+                    {remainingCount} others
+                </button>
             </span>
         );
     };
 
-    // Show all likes modal/expanded view
-    if (showAllLikes && likes.length > 2) {
+    // Show all likes modal
+    if (showAllLikes) {
         return (
-            <div className={`text-sm text-gray-600 ${className}`}>
-                <div className="space-y-1">
-                    {likes.map((user) => (
-                        <div key={user._id} className="flex items-center gap-2 py-1">
-                            <img
-                                src={user.profile_picture}
-                                alt={user.full_name}
-                                className="w-6 h-6 rounded-full object-cover"
-                            />
-                            <button
-                                onClick={() => handleUserClick(user._id)}
-                                className="font-semibold text-gray-900 hover:underline"
-                            >
-                                {user.full_name || user.username}
-                            </button>
-                            {user._id === currentUser?._id && (
-                                <span className="text-xs text-gray-500">(you)</span>
-                            )}
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                <div className="bg-white rounded-xl w-full max-w-md max-h-[70vh] flex flex-col">
+                    {/* Header */}
+                    <div className="flex items-center justify-between p-4 border-b border-gray-200 flex-shrink-0">
+                        <h3 className="text-lg font-semibold text-gray-900">
+                            Likes ({likesCount})
+                        </h3>
+                        <button
+                            onClick={() => setShowAllLikes(false)}
+                            className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition-colors"
+                        >
+                            <X className="w-4 h-4" />
+                        </button>
+                    </div>
+
+                    {/* Likes List */}
+                    <div className="flex-1 overflow-y-auto p-4">
+                        <div className="space-y-3">
+                            {likes.map((user) => (
+                                <div 
+                                    key={user._id} 
+                                    className="flex items-center gap-3 hover:bg-gray-50 p-2 rounded-lg transition-colors cursor-pointer"
+                                    onClick={() => handleUserClick(user)}
+                                >
+                                    <img
+                                        src={user.profile_picture}
+                                        alt={user.full_name}
+                                        className="w-10 h-10 rounded-full object-cover"
+                                    />
+                                    <div className="flex-1">
+                                        <div className="font-semibold text-gray-900">
+                                            {user.full_name || user.username}
+                                            {user._id === currentUser?._id && (
+                                                <span className="text-sm text-gray-500 font-normal ml-2">(you)</span>
+                                            )}
+                                        </div>
+                                        <div className="text-sm text-gray-500">
+                                            @{user.username}
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
                         </div>
-                    ))}
-                    <button
-                        onClick={() => setShowAllLikes(false)}
-                        className="text-xs text-gray-500 hover:text-gray-700 mt-2"
-                    >
-                        Show less
-                    </button>
+                    </div>
                 </div>
             </div>
         );
@@ -205,7 +241,28 @@ const LikedBy = ({ likes = [], className = '' }) => {
 
     return (
         <div className={`text-sm text-gray-600 ${className}`}>
-            {renderLikeText()}
+            <div className="flex items-center gap-2">
+                {/* Small avatars for first few likers */}
+                {likes.slice(0, 3).map((user, index) => (
+                    <button
+                        key={user._id}
+                        onClick={() => handleUserClick(user)}
+                        className="relative"
+                        style={{ marginLeft: index > 0 ? '-6px' : '0' }}
+                    >
+                        <img
+                            src={user.profile_picture}
+                            alt={user.full_name}
+                            className="w-6 h-6 rounded-full object-cover border-2 border-white hover:border-gray-200 transition-colors"
+                        />
+                    </button>
+                ))}
+                
+                {/* Text */}
+                <div className="flex-1">
+                    {renderLikeText()}
+                </div>
+            </div>
         </div>
     );
 };
