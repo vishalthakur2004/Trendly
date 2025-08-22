@@ -124,9 +124,17 @@ const PostCard = ({post}) => {
 
             <button
                 onClick={() => setShowComments(!showComments)}
-                className='flex items-center gap-1 hover:text-blue-500 transition-colors cursor-pointer'
+                className={`flex items-center gap-1 transition-colors cursor-pointer ${
+                    showComments ? 'text-blue-500' : 'text-gray-600 hover:text-blue-500'
+                }`}
+                title={showComments ? 'Hide comments' : 'View comments'}
             >
-                <MessageCircle className="w-4 h-4"/>
+                <MessageCircle className={`w-4 h-4 ${showComments ? 'fill-blue-500' : ''}`}/>
+                {commentsCount > 0 && !showComments && (
+                    <span className="text-xs bg-blue-500 text-white rounded-full min-w-[16px] h-4 flex items-center justify-center px-1">
+                        {commentsCount > 99 ? '99+' : commentsCount}
+                    </span>
+                )}
             </button>
 
             <button
@@ -155,13 +163,27 @@ const PostCard = ({post}) => {
             />
         )}
 
-        {/* Inline Comments Section */}
-        {showComments && (
-            <InlineCommentsSection
-                postId={post._id}
-                initialCommentsCount={commentsCount}
-            />
+        {/* View Comments Link */}
+        {!showComments && commentsCount > 0 && (
+            <button
+                onClick={() => setShowComments(true)}
+                className="text-sm text-gray-500 hover:text-gray-700 transition-colors px-1"
+            >
+                View all {commentsCount} comments
+            </button>
         )}
+
+        {/* Inline Comments Section */}
+        <div className={`transition-all duration-300 ease-in-out overflow-hidden ${
+            showComments ? 'max-h-none opacity-100' : 'max-h-0 opacity-0'
+        }`}>
+            {showComments && (
+                <InlineCommentsSection
+                    postId={post._id}
+                    initialCommentsCount={commentsCount}
+                />
+            )}
+        </div>
 
         {/* Share Modal */}
         <ShareModal
