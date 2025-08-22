@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useAuth } from '@clerk/clerk-react';
-import { 
-    Heart, 
-    MessageCircle, 
-    Pin, 
-    MoreVertical, 
-    Edit3, 
+import {
+    Heart,
+    MessageCircle,
+    Pin,
+    MoreVertical,
+    Edit3,
     Trash2,
     CheckCircle,
     XCircle,
@@ -14,12 +14,13 @@ import {
 } from 'lucide-react';
 import moment from 'moment';
 import toast from 'react-hot-toast';
-import { 
-    toggleLikeGroupPost, 
-    togglePinPost, 
-    deleteGroupPost, 
-    moderatePost 
+import {
+    toggleLikeGroupPost,
+    togglePinPost,
+    deleteGroupPost,
+    moderatePost
 } from '../features/groups/groupPostsSlice';
+import InlineCommentsSection from './InlineCommentsSection';
 
 const GroupPostCard = ({ post, groupId, canModerate = false }) => {
     const dispatch = useDispatch();
