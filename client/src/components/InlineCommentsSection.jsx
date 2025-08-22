@@ -104,6 +104,20 @@ const InlineCommentsSection = ({ postId, initialCommentsCount = 0 }) => {
         }
     };
 
+    const handleDeleteComment = async (commentId) => {
+        if (!window.confirm('Are you sure you want to delete this comment?')) {
+            return;
+        }
+
+        try {
+            const token = await getToken();
+            await dispatch(deleteComment({ commentId, token })).unwrap();
+            toast.success('Comment deleted');
+        } catch (error) {
+            toast.error(error);
+        }
+    };
+
     const findCommentById = (commentId) => {
         if (!commentsState?.comments) return null;
         
