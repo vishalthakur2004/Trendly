@@ -42,18 +42,28 @@ const Discover = () => {
   const loadSuggestedConnections = async () => {
     try {
       setSuggestionsLoading(true)
+      const token = await getToken()
+
+      if (!token) {
+        toast.error('Authentication required')
+        return
+      }
+
       const { data } = await api.get('/api/user/suggested-connections?limit=20', {
-        headers: { Authorization: `Bearer ${await getToken()}` }
+        headers: { Authorization: `Bearer ${token}` }
       })
 
       if (data.success) {
-        setSuggestedUsers(data.suggestedUsers)
+        setSuggestedUsers(data.suggestedUsers || [])
+        console.log('Loaded suggested connections:', data.suggestedUsers?.length || 0)
       } else {
-        toast.error(data.message)
+        console.error('API error:', data.message)
+        toast.error(data.message || 'Failed to load suggested connections')
       }
     } catch (error) {
       console.error('Error loading suggested connections:', error)
-      toast.error('Failed to load suggested connections')
+      const errorMessage = error.response?.data?.message || error.message || 'Failed to load suggested connections'
+      toast.error(errorMessage)
     } finally {
       setSuggestionsLoading(false)
     }
