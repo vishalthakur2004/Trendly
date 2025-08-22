@@ -370,10 +370,12 @@ const InlineCommentsSection = ({ postId, initialCommentsCount = 0 }) => {
                             placeholder="Add a comment..."
                             className="flex-1 px-3 py-1 text-sm border border-gray-200 rounded-full focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:opacity-50"
                             disabled={isSubmitting}
-                            onKeyPress={(e) => {
+                            onKeyDown={(e) => {
                                 if (e.key === 'Enter' && !e.shiftKey) {
                                     e.preventDefault();
                                     handleAddComment(e);
+                                } else if (e.key === 'Escape') {
+                                    setNewComment('');
                                 }
                             }}
                         />
