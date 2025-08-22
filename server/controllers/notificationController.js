@@ -198,6 +198,16 @@ export const generateNotificationContent = (type, senderName, metadata = {}) => 
         case 'call':
             const callType = metadata.callType || 'voice';
             return `${senderName} is calling you (${callType} call)`;
+        case 'missed_call':
+            const missedCallType = metadata.callType || 'voice';
+            if (metadata.isGroupCall) {
+                return `Missed group ${missedCallType} call from ${senderName}`;
+            }
+            return `Missed ${missedCallType} call from ${senderName}`;
+        case 'group_call':
+            const groupCallType = metadata.callType || 'voice';
+            const groupName = metadata.groupName || 'group';
+            return `${senderName} started a ${groupCallType} call in ${groupName}`;
         default:
             return `${senderName} interacted with your content`;
     }
