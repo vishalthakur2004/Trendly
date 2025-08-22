@@ -14,7 +14,7 @@ const StoriesBar = () => {
 
     const [stories, setStories] = useState([])
     const [showModal, setShowModal] = useState(false)
-    const [viewStory, setViewStory] = useState(null)
+    const [viewerData, setViewerData] = useState(null)
 
     const fetchStories = async () => {
         try {
