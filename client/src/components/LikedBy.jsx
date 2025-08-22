@@ -28,8 +28,9 @@ const LikedBy = ({ likes = [], className = '' }) => {
     // Helper function to check if user is a connection/following
     const isConnection = (user) => {
         if (!currentUser || typeof user === 'string') return false;
-        return currentUser.connections?.includes(user._id) || 
-               currentUser.following?.includes(user._id);
+        return connections.connections?.some(conn => conn._id === user._id) ||
+               connections.following?.some(conn => conn._id === user._id) ||
+               connections.followers?.some(conn => conn._id === user._id);
     };
 
     // Handle legacy format (array of user IDs as strings)
