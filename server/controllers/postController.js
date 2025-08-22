@@ -56,11 +56,51 @@ export const getFeedPosts = async (req, res) =>{
         const { userId } = req.auth()
         const user = await User.findById(userId)
 
-        // User connections and followings 
+        // User connections and followings
         const userIds = [userId, ...user.connections, ...user.following]
-        const posts = await Post.find({user: {$in: userIds}}).populate('user').sort({createdAt: -1});
+        const posts = await Post.find({user: {$in: userIds}})
+            .populate('user')
+            .populate({
+                path: 'likes_count',
+                select: 'full_name username profile_picture',
+                options: { limit: 20 } // Limit to prevent performance issues
+            })
+            .sort({createdAt: -1});
 
-        res.json({ success: true, posts})
+        // Sort likes to prioritize user's connections
+        const userConnections = new Set([...user.connections, ...user.following]);
+
+        const processedPosts = posts.map(post => {
+            const postObj = post.toObject();
+
+            if (postObj.likes_count && postObj.likes_count.length > 0) {
+                // Separate likes into connections and non-connections
+                const connectionLikes = [];
+                const otherLikes = [];
+
+                postObj.likes_count.forEach(like => {
+                    if (like._id === userId || userConnections.has(like._id)) {
+                        connectionLikes.push(like);
+                    } else {
+                        otherLikes.push(like);
+                    }
+                });
+
+                // Sort connections: current user first, then alphabetically
+                connectionLikes.sort((a, b) => {
+                    if (a._id === userId) return -1;
+                    if (b._id === userId) return 1;
+                    return (a.full_name || a.username).localeCompare(b.full_name || b.username);
+                });
+
+                // Combine: connections first, then others
+                postObj.likes_count = [...connectionLikes, ...otherLikes];
+            }
+
+            return postObj;
+        });
+
+        res.json({ success: true, posts: processedPosts})
     } catch (error) {
         console.log(error);
         res.json({ success: false, message: error.message });
