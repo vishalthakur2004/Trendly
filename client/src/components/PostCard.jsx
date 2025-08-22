@@ -116,13 +116,10 @@ const PostCard = ({post}) => {
                 <span>{likes.length}</span>
             </button>
 
-            <button
-                onClick={handleCommentsClick}
-                className='flex items-center gap-1 hover:text-blue-500 transition-colors cursor-pointer'
-            >
+            <div className='flex items-center gap-1 text-gray-600'>
                 <MessageCircle className="w-4 h-4"/>
                 <span>{commentsCount}</span>
-            </button>
+            </div>
 
             <button
                 onClick={handleShareClick}
