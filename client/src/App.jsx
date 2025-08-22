@@ -38,8 +38,27 @@ import socketService from './services/socketService'
 import webrtcService from './services/webrtcService'
 
 const App = () => {
-  const {user} = useUser()
-  const {getToken } = useAuth()
+  // Check if Clerk is available
+  const hasClerk = window.Clerk !== undefined
+
+  // Use Clerk hooks if available, otherwise use fallback
+  const clerkUser = hasClerk ? useUser()?.user : null
+  const clerkAuth = hasClerk ? useAuth() : null
+
+  // Development fallback user and auth
+  const fallbackUser = !hasClerk ? {
+    id: 'dev_user_123',
+    firstName: 'Dev',
+    lastName: 'User',
+    emailAddresses: [{ emailAddress: 'dev@example.com' }]
+  } : null
+
+  const fallbackGetToken = async () => 'dev_token_123'
+
+  // Use Clerk if available, otherwise use fallback
+  const user = clerkUser || fallbackUser
+  const getToken = clerkAuth?.getToken || fallbackGetToken
+
   const {pathname} = useLocation()
   const pathnameRef = useRef(pathname)
 
