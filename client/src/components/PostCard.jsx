@@ -70,10 +70,6 @@ const PostCard = ({post}) => {
         }
     }
 
-    const handleCommentsClick = () => {
-        setShowComments(true);
-    }
-
     const handleShareClick = () => {
         setShowShareModal(true);
     }
