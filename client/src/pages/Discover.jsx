@@ -178,16 +178,24 @@ const Discover = () => {
             ) : (
               <div className='text-center py-16'>
                 <Users className='w-16 h-16 mx-auto text-gray-300 mb-4' />
-                <h3 className='text-lg font-medium text-gray-900 mb-2'>No suggestions available</h3>
+                <h3 className='text-lg font-medium text-gray-900 mb-2'>
+                  {suggestionsLoading ? 'Loading suggestions...' : 'No suggestions available'}
+                </h3>
                 <p className='text-gray-600 mb-4'>
-                  We'll show you suggested connections based on your network as it grows.
+                  {suggestionsLoading
+                    ? 'Finding people you might know...'
+                    : 'We\'ll show you suggested connections based on your network as it grows.'
+                  }
                 </p>
-                <button
-                  onClick={loadSuggestedConnections}
-                  className='px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors'
-                >
-                  Try Again
-                </button>
+                {!suggestionsLoading && (
+                  <button
+                    onClick={loadSuggestedConnections}
+                    className='px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors flex items-center gap-2 mx-auto'
+                  >
+                    <RefreshCw className='w-4 h-4' />
+                    Try Again
+                  </button>
+                )}
               </div>
             )}
           </div>
