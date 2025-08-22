@@ -32,7 +32,8 @@ import {
 } from './features/calls/callsSlice'
 import Notification from './components/Notification'
 import CallInterface from './components/CallInterface'
-import IncomingCallModal from './components/IncomingCallModal'
+import CallingScreen from './components/CallingScreen'
+import IncomingCallScreen from './components/IncomingCallScreen'
 import socketService from './services/socketService'
 import webrtcService from './services/webrtcService'
 
