@@ -177,11 +177,11 @@ const PostCard = ({post}) => {
             </button>
         </div>
 
-        {/* Liked By Section */}
+        {/* Liked By Section - Instagram style */}
         {likes.length > 0 && (
             <LikedBy
                 likes={likes}
-                className="px-1 -mt-2"
+                className="px-1 -mt-1"
             />
         )}
 
