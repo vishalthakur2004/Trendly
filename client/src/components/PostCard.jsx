@@ -9,6 +9,7 @@ import toast from 'react-hot-toast'
 import InlineCommentsSection from './InlineCommentsSection'
 import ShareModal from './ShareModal'
 import ShareToStoryModal from './ShareToStoryModal'
+import Avatar from './Avatar'
 
 const PostCard = ({post}) => {
 
@@ -83,11 +84,15 @@ const PostCard = ({post}) => {
   return (
     <div className='bg-white rounded-xl shadow p-4 space-y-4 w-full max-w-2xl'>
         {/* User Info */}
-        <div onClick={()=> navigate('/profile/' + post.user._id)} className='inline-flex items-center gap-3 cursor-pointer'>
-            <img src={post.user.profile_picture} alt="" className='w-10 h-10 rounded-full shadow'/>
+        <div onClick={()=> navigate('/profile/' + post.user._id)} className='inline-flex items-center gap-3 cursor-pointer hover:bg-gray-50 p-2 -m-2 rounded-lg transition-colors'>
+            <Avatar
+                src={post.user.profile_picture}
+                name={post.user.full_name}
+                size="md"
+            />
             <div>
                 <div className='flex items-center space-x-1'>
-                    <span>{post.user.full_name}</span>
+                    <span className='font-semibold text-gray-900'>{post.user.full_name}</span>
                     <BadgeCheck className='w-4 h-4 text-blue-500'/>
                 </div>
                 <div className='text-gray-500 text-sm'>@{post.user.username} • {moment(post.createdAt).fromNow()}</div>
