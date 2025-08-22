@@ -37,6 +37,36 @@ const StoriesBar = () => {
         fetchStories()
     },[])
 
+    // Group stories by user (like Instagram)
+    const groupedStories = stories.reduce((groups, story) => {
+        const userId = story.user._id
+        if (!groups[userId]) {
+            groups[userId] = {
+                user: story.user,
+                stories: [story],
+                latestStory: story
+            }
+        } else {
+            groups[userId].stories.push(story)
+            // Keep the latest story as the preview
+            if (new Date(story.createdAt) > new Date(groups[userId].latestStory.createdAt)) {
+                groups[userId].latestStory = story
+            }
+        }
+        return groups
+    }, {})
+
+    const userStoryGroups = Object.values(groupedStories)
+
+    const handleStoryClick = (userGroup) => {
+        // Find the index of the first story from this user in the full stories array
+        const firstStoryIndex = stories.findIndex(story => story.user._id === userGroup.user._id)
+        setViewerData({
+            stories: stories,
+            initialStoryIndex: firstStoryIndex
+        })
+    }
+
   return (
     <div className='w-screen sm:w-[calc(100vw-240px)] lg:max-w-2xl no-scrollbar overflow-x-auto px-4'>
 
