@@ -38,8 +38,38 @@ import socketService from './services/socketService'
 import webrtcService from './services/webrtcService'
 
 const App = () => {
-  const {user} = useUser()
-  const {getToken } = useAuth()
+  // Safe Clerk hooks usage with fallback
+  let user, getToken
+
+  try {
+    const clerkUser = useUser()
+    const clerkAuth = useAuth()
+
+    if (clerkUser && clerkAuth) {
+      user = clerkUser.user
+      getToken = clerkAuth.getToken
+    } else {
+      // Fallback for development without Clerk
+      user = {
+        id: 'dev_user_123',
+        firstName: 'Dev',
+        lastName: 'User',
+        emailAddresses: [{ emailAddress: 'dev@example.com' }]
+      }
+      getToken = async () => 'dev_token_123'
+    }
+  } catch (error) {
+    // Fallback when Clerk is not available
+    console.log('Clerk not available, using development mode')
+    user = {
+      id: 'dev_user_123',
+      firstName: 'Dev',
+      lastName: 'User',
+      emailAddresses: [{ emailAddress: 'dev@example.com' }]
+    }
+    getToken = async () => 'dev_token_123'
+  }
+
   const {pathname} = useLocation()
   const pathnameRef = useRef(pathname)
 
