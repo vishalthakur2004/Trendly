@@ -173,7 +173,10 @@ const PostCard = ({post}) => {
 
         {/* Instagram-style Likes Display */}
         {likes.length > 0 && (
-            <div className='flex items-center gap-3'>
+            <div
+                className='flex items-center gap-3 cursor-pointer hover:bg-gray-50 p-2 rounded-lg transition-colors -mx-2'
+                onClick={() => setShowLikesModal(true)}
+            >
                 {/* Profile pictures of recent likers */}
                 <div className='flex -space-x-2'>
                     {likedUsers.slice(0, 3).map((user, index) => (
@@ -199,6 +202,14 @@ const PostCard = ({post}) => {
             <span>•</span>
             <span>7 shares</span>
         </div>
+
+        {/* Likes Modal */}
+        <LikesModal
+            isOpen={showLikesModal}
+            onClose={() => setShowLikesModal(false)}
+            likedUsers={likedUsers}
+            currentUser={currentUser}
+        />
     </div>
   )
 }
