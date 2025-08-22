@@ -100,31 +100,59 @@ const PostCard = ({post}) => {
     const navigate = useNavigate()
 
   return (
-    <div className='bg-white rounded-xl shadow p-4 space-y-4 w-full max-w-2xl'>
+    <div className='bg-white w-full max-w-lg mx-auto md:rounded-xl md:shadow-sm border-b border-gray-200 md:border-none'>
         {/* User Info */}
-        <div onClick={()=> navigate('/profile/' + post.user._id)} className='inline-flex items-center gap-3 cursor-pointer hover:bg-gray-50 p-2 -m-2 rounded-lg transition-colors'>
+        <div onClick={()=> navigate('/profile/' + post.user._id)} className='flex items-center gap-3 p-4 cursor-pointer hover:bg-gray-50 transition-colors'>
             <Avatar
                 src={post.user.profile_picture}
                 name={post.user.full_name}
                 size="md"
             />
-            <div>
-                <div className='flex items-center space-x-1'>
-                    <span className='font-semibold text-gray-900'>{post.user.full_name}</span>
+            <div className="flex-1">
+                <div className='flex items-center gap-1'>
+                    <span className='font-semibold text-gray-900 text-sm'>{post.user.username}</span>
                     <BadgeCheck className='w-4 h-4 text-blue-500'/>
                 </div>
-                <div className='text-gray-500 text-sm'>@{post.user.username} • {moment(post.createdAt).fromNow()}</div>
+                <div className='text-gray-500 text-xs'>{moment(post.createdAt).fromNow()}</div>
             </div>
+            <button className="p-1">
+                <svg className="w-5 h-5 text-gray-700" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
+                </svg>
+            </button>
         </div>
-         {/* Content */}
-         {post.content && <div className='text-gray-800 text-sm whitespace-pre-line' dangerouslySetInnerHTML={{__html: postWithHashtags}}/>}
 
-       {/* Images */}
-       <div className='grid grid-cols-2 gap-2'>
-            {post.image_urls.map((img, index)=>(
-                <img src={img} key={index} className={`w-full h-48 object-cover rounded-lg ${post.image_urls.length === 1 && 'col-span-2 h-auto'}`} alt="" />
-            ))}
-       </div>
+        {/* Images */}
+        <div className='relative'>
+            {post.image_urls.length > 0 && (
+                <div className='aspect-square bg-gray-100'>
+                    {post.image_urls.length === 1 ? (
+                        <img
+                            src={post.image_urls[0]}
+                            className='w-full h-full object-cover'
+                            alt=""
+                        />
+                    ) : (
+                        <div className='grid grid-cols-2 gap-1 h-full'>
+                            {post.image_urls.slice(0, 4).map((img, index) => (
+                                <div key={index} className="relative">
+                                    <img
+                                        src={img}
+                                        className='w-full h-full object-cover'
+                                        alt=""
+                                    />
+                                    {index === 3 && post.image_urls.length > 4 && (
+                                        <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+                                            <span className="text-white font-semibold">+{post.image_urls.length - 4}</span>
+                                        </div>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
+            )}
+        </div>
 
         {/* Actions */}
         <div className='flex items-center gap-4 text-gray-600 text-sm pt-2 border-t border-gray-300'>
