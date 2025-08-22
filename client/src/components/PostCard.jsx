@@ -30,16 +30,39 @@ const PostCard = ({post}) => {
         if (isLiking) return; // Prevent double clicks
 
         setIsLiking(true);
-        const wasLiked = likes.includes(currentUser._id);
 
-        // Optimistic update
-        setLikes(prev => {
-            if (prev.includes(currentUser._id)) {
-                return prev.filter(id => id !== currentUser._id)
-            } else {
-                return [...prev, currentUser._id]
-            }
-        });
+        // Check if currently liked (handle both string IDs and user objects)
+        const wasLiked = Array.isArray(likes) && likes.some(like =>
+            typeof like === 'string' ? like === currentUser._id : like._id === currentUser._id
+        );
+
+        // Optimistic update - keep current format
+        const originalLikes = likes;
+        if (typeof likes[0] === 'string') {
+            // Legacy format - array of user IDs
+            setLikes(prev => {
+                if (prev.includes(currentUser._id)) {
+                    return prev.filter(id => id !== currentUser._id)
+                } else {
+                    return [...prev, currentUser._id]
+                }
+            });
+        } else {
+            // New format - array of user objects
+            setLikes(prev => {
+                const userLikeIndex = prev.findIndex(like => like._id === currentUser._id);
+                if (userLikeIndex !== -1) {
+                    return prev.filter(like => like._id !== currentUser._id);
+                } else {
+                    return [{
+                        _id: currentUser._id,
+                        full_name: currentUser.full_name,
+                        username: currentUser.username,
+                        profile_picture: currentUser.profile_picture
+                    }, ...prev];
+                }
+            });
+        }
 
         try {
             const { data } = await api.post(`/api/post/like`,
@@ -47,26 +70,19 @@ const PostCard = ({post}) => {
                 { headers: { Authorization: `Bearer ${await getToken()}` } }
             );
 
-            if (!data.success) {
+            if (data.success) {
+                // Update with server response (should include populated user objects)
+                if (data.likes) {
+                    setLikes(data.likes);
+                }
+            } else {
                 // Revert optimistic update on failure
-                setLikes(prev => {
-                    if (wasLiked) {
-                        return [...prev, currentUser._id]
-                    } else {
-                        return prev.filter(id => id !== currentUser._id)
-                    }
-                });
+                setLikes(originalLikes);
                 toast.error(data.message || 'Failed to like post');
             }
         } catch (error) {
             // Revert optimistic update on error
-            setLikes(prev => {
-                if (wasLiked) {
-                    return [...prev, currentUser._id]
-                } else {
-                    return prev.filter(id => id !== currentUser._id)
-                }
-            });
+            setLikes(originalLikes);
             toast.error(error.response?.data?.message || 'Failed to like post. Please try again.');
         } finally {
             setIsLiking(false);
