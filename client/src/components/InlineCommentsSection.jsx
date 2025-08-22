@@ -88,6 +88,11 @@ const InlineCommentsSection = ({ postId, initialCommentsCount = 0 }) => {
     const handleLikeComment = async (commentId) => {
         try {
             const comment = findCommentById(commentId);
+            if (!comment) {
+                toast.error('Comment not found');
+                return;
+            }
+
             const isLiked = comment?.likes?.includes(currentUser._id);
 
             // Optimistic update
@@ -100,15 +105,15 @@ const InlineCommentsSection = ({ postId, initialCommentsCount = 0 }) => {
             const token = await getToken();
             await dispatch(likeComment({ commentId, token })).unwrap();
         } catch (error) {
-            // Revert optimistic update
+            // Revert optimistic update on error
             const comment = findCommentById(commentId);
-            const isLiked = comment?.likes?.includes(currentUser._id);
+            const wasLiked = comment?.likes?.includes(currentUser._id);
             dispatch(updateCommentLike({
                 commentId,
                 userId: currentUser._id,
-                isLiked: !isLiked
+                isLiked: !wasLiked
             }));
-            toast.error(error);
+            toast.error(error || 'Failed to update like');
         }
     };
 
