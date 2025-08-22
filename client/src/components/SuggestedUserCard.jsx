@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom'
 import api from '../api/axios'
 import toast from 'react-hot-toast'
 import { fetchUser } from '../features/user/userSlice'
+import Avatar from './Avatar'
 
 const SuggestedUserCard = ({ user }) => {
     const currentUser = useSelector((state) => state.user.value)
@@ -53,7 +54,7 @@ const SuggestedUserCard = ({ user }) => {
     }
 
     return (
-        <div className='p-6 flex flex-col justify-between w-80 shadow-lg border border-gray-200 rounded-xl bg-white hover:shadow-xl transition-shadow duration-300'>
+        <div className='p-6 flex flex-col justify-between w-80 shadow-lg border border-gray-100 rounded-xl bg-white hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1'>
             {/* Header with mutual connections badge */}
             {user.mutualConnectionsCount > 0 && (
                 <div className='flex justify-end mb-2'>
@@ -66,18 +67,17 @@ const SuggestedUserCard = ({ user }) => {
 
             {/* User Info */}
             <div className='text-center'>
-                <div className='relative inline-block'>
-                    <img 
-                        src={user.profile_picture} 
-                        alt={user.full_name} 
-                        className='rounded-full w-20 h-20 shadow-md mx-auto object-cover cursor-pointer hover:opacity-90 transition-opacity'
-                        onClick={handleViewProfile}
-                    />
-                </div>
+                <Avatar
+                    src={user.profile_picture}
+                    name={user.full_name}
+                    size="xl"
+                    onClick={handleViewProfile}
+                    className="mx-auto"
+                />
                 <h3 className='mt-4 font-semibold text-lg text-gray-900'>{user.full_name}</h3>
-                {user.username && <p className='text-gray-500 font-light'>@{user.username}</p>}
+                {user.username && <p className='text-gray-500 font-medium text-sm'>@{user.username}</p>}
                 {user.bio && (
-                    <p className='text-gray-600 mt-3 text-center text-sm px-2 line-clamp-3'>
+                    <p className='text-gray-600 mt-3 text-center text-sm px-2 line-clamp-3 leading-relaxed'>
                         {user.bio}
                     </p>
                 )}
@@ -85,8 +85,8 @@ const SuggestedUserCard = ({ user }) => {
 
             {/* Mutual Connections */}
             {user.mutualConnections && user.mutualConnections.length > 0 && (
-                <div className='mt-4 p-3 bg-gray-50 rounded-lg'>
-                    <p className='text-xs text-gray-600 mb-2 font-medium'>Mutual connections:</p>
+                <div className='mt-4 p-3 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 rounded-lg'>
+                    <p className='text-xs text-blue-700 mb-2 font-semibold'>Mutual connections:</p>
                     <div className='flex items-center gap-1 flex-wrap'>
                         {user.mutualConnections.slice(0, 3).map((connection, index) => (
                             <span key={connection._id} className='text-xs text-blue-600 font-medium'>
@@ -95,7 +95,7 @@ const SuggestedUserCard = ({ user }) => {
                             </span>
                         ))}
                         {user.mutualConnectionsCount > 3 && (
-                            <span className='text-xs text-gray-500'>
+                            <span className='text-xs text-blue-500 font-medium'>
                                 and {user.mutualConnectionsCount - 3} more
                             </span>
                         )}
@@ -106,27 +106,28 @@ const SuggestedUserCard = ({ user }) => {
             {/* Stats */}
             <div className='flex items-center justify-center gap-3 mt-4 text-xs text-gray-600'>
                 {user.location && (
-                    <div className='flex items-center gap-1 border border-gray-300 rounded-full px-3 py-1.5'>
-                        <MapPin className='w-3 h-3' />
-                        <span className='truncate max-w-20'>{user.location}</span>
+                    <div className='flex items-center gap-1.5 bg-gray-50 border border-gray-200 rounded-full px-3 py-2'>
+                        <MapPin className='w-3 h-3 text-gray-500' />
+                        <span className='truncate max-w-20 font-medium'>{user.location}</span>
                     </div>
                 )}
-                <div className='flex items-center gap-1 border border-gray-300 rounded-full px-3 py-1.5'>
-                    <Users className='w-3 h-3' />
-                    <span>{user.followers?.length || 0} followers</span>
+                <div className='flex items-center gap-1.5 bg-gray-50 border border-gray-200 rounded-full px-3 py-2'>
+                    <Users className='w-3 h-3 text-gray-500' />
+                    <span className='font-semibold text-gray-700'>{user.followers?.length || 0}</span>
+                    <span>followers</span>
                 </div>
             </div>
 
             {/* Action Buttons */}
-            <div className='flex mt-6 gap-2'>
+            <div className='flex mt-6 gap-3'>
                 {/* Follow Button */}
-                <button 
-                    onClick={handleFollow} 
-                    disabled={currentUser?.following.includes(user._id)} 
-                    className={`flex-1 py-2.5 rounded-lg flex justify-center items-center gap-2 font-medium transition-all duration-200 ${
+                <button
+                    onClick={handleFollow}
+                    disabled={currentUser?.following.includes(user._id)}
+                    className={`flex-1 py-2.5 rounded-xl flex justify-center items-center gap-2 font-medium transition-all duration-200 transform ${
                         currentUser?.following.includes(user._id)
                             ? 'bg-gray-100 text-gray-600 cursor-default'
-                            : 'bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 active:scale-95 text-white cursor-pointer hover:shadow-lg'
+                            : 'bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 active:scale-95 text-white cursor-pointer hover:shadow-lg hover:-translate-y-0.5'
                     }`}
                 >
                     <UserPlus className='w-4 h-4' />
@@ -134,9 +135,9 @@ const SuggestedUserCard = ({ user }) => {
                 </button>
 
                 {/* Connection Request / Message Button */}
-                <button 
-                    onClick={handleConnectionRequest} 
-                    className='flex items-center justify-center w-12 h-10 border-2 border-gray-300 text-gray-600 hover:border-indigo-500 hover:text-indigo-600 rounded-lg cursor-pointer active:scale-95 transition-all duration-200 hover:shadow-md'
+                <button
+                    onClick={handleConnectionRequest}
+                    className='flex items-center justify-center w-12 h-10 border-2 border-gray-200 text-gray-600 hover:border-indigo-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl cursor-pointer active:scale-95 transition-all duration-200 transform hover:shadow-md hover:-translate-y-0.5'
                     title={currentUser?.connections.includes(user._id) ? 'Send Message' : 'Send Connection Request'}
                 >
                     {currentUser?.connections.includes(user._id) ? (
@@ -148,9 +149,9 @@ const SuggestedUserCard = ({ user }) => {
             </div>
 
             {/* View Profile Button */}
-            <button 
+            <button
                 onClick={handleViewProfile}
-                className='mt-3 w-full py-2 text-sm text-gray-600 hover:text-indigo-600 transition-colors duration-200 font-medium'
+                className='mt-4 w-full py-2.5 text-sm text-gray-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all duration-200 font-medium'
             >
                 View Profile
             </button>
