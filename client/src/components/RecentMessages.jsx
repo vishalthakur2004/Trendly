@@ -64,7 +64,6 @@ const RecentMessages = () => {
                         </div>
                         <div className='flex justify-between items-center'>
                             <p className='text-gray-600 text-sm truncate max-w-48'>{message.text ? message.text : 'Media'}</p>
-                            {!message.seen && <div className='bg-green-500 text-white w-5 h-5 flex items-center justify-center rounded-full text-xs font-medium'>1</div>}
                         </div>
                     </div>
 
