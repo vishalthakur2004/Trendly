@@ -51,7 +51,6 @@ const callSchema = new mongoose.Schema({
 // Index for better query performance
 callSchema.index({ initiator: 1, createdAt: -1 });
 callSchema.index({ participants: 1, createdAt: -1 });
-callSchema.index({ call_id: 1 });
 
 const Call = mongoose.model('Call', callSchema);
 
