@@ -241,15 +241,26 @@ const InlineCommentsSection = ({ postId, initialCommentsCount = 0 }) => {
                                             value={replyText}
                                             onChange={(e) => setReplyText(e.target.value)}
                                             placeholder="Write a reply..."
-                                            className="flex-1 px-3 py-1 text-sm border border-gray-200 rounded-full focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                            className="flex-1 px-3 py-1 text-sm border border-gray-200 rounded-full focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:opacity-50"
                                             autoFocus
+                                            disabled={isSubmittingReply}
+                                            onKeyPress={(e) => {
+                                                if (e.key === 'Enter' && !e.shiftKey) {
+                                                    e.preventDefault();
+                                                    handleAddReply(e, comment._id);
+                                                }
+                                            }}
                                         />
-                                        <button 
+                                        <button
                                             type="submit"
-                                            disabled={!replyText.trim()}
-                                            className="text-blue-500 hover:text-blue-600 disabled:text-gray-400 disabled:cursor-not-allowed"
+                                            disabled={!replyText.trim() || isSubmittingReply}
+                                            className="text-blue-500 hover:text-blue-600 disabled:text-gray-400 disabled:cursor-not-allowed transition-colors"
                                         >
-                                            <Send className="w-4 h-4" />
+                                            {isSubmittingReply ? (
+                                                <div className="w-4 h-4 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin"></div>
+                                            ) : (
+                                                <Send className="w-4 h-4" />
+                                            )}
                                         </button>
                                     </div>
                                 </div>
