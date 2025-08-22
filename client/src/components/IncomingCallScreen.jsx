@@ -5,7 +5,7 @@ import { useAuth } from '@clerk/clerk-react';
 import toast from 'react-hot-toast';
 import socketService from '../services/socketService';
 import webrtcService from '../services/webrtcService';
-import { 
+import {
     setCallActive,
     setCallStatus,
     clearIncomingCall,
@@ -14,7 +14,6 @@ import {
     setCurrentCall,
     setParticipants
 } from '../features/calls/callsSlice';
-import { createNotification } from '../features/notifications/notificationsSlice';
 
 const IncomingCallScreen = () => {
     const dispatch = useDispatch();
