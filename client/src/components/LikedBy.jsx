@@ -7,6 +7,7 @@ import Avatar from './Avatar';
 const LikedBy = ({ likes = [], className = '' }) => {
     const navigate = useNavigate();
     const currentUser = useSelector((state) => state.user.value);
+    const connections = useSelector((state) => state.connections);
     const [showAllLikes, setShowAllLikes] = useState(false);
 
     if (!likes || likes.length === 0) {
