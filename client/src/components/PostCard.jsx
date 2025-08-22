@@ -154,55 +154,52 @@ const PostCard = ({post}) => {
             )}
         </div>
 
-        {/* Actions */}
-        <div className='flex items-center gap-4 text-gray-600 text-sm pt-2 border-t border-gray-300'>
-            <button
-                onClick={handleLike}
-                disabled={isLiking}
-                className={`flex items-center gap-1 hover:text-red-500 transition-colors ${
-                    likes && likes.some(like =>
-                        typeof like === 'string' ? like === currentUser._id : like._id === currentUser._id
-                    ) ? 'text-red-500' : ''
-                } ${isLiking ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
-            >
-                <Heart className={`w-4 h-4 ${
-                    likes && likes.some(like =>
-                        typeof like === 'string' ? like === currentUser._id : like._id === currentUser._id
-                    ) ? 'fill-red-500' : ''
-                }`} />
-            </button>
+        {/* Actions - Instagram Style */}
+        <div className='px-4 py-3 space-y-3'>
+            <div className='flex items-center justify-between'>
+                <div className='flex items-center gap-4'>
+                    <button
+                        onClick={handleLike}
+                        disabled={isLiking}
+                        className={`transition-colors ${
+                            likes && likes.some(like =>
+                                typeof like === 'string' ? like === currentUser._id : like._id === currentUser._id
+                            ) ? 'text-red-500' : 'text-gray-700 hover:text-red-500'
+                        } ${isLiking ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+                    >
+                        <Heart className={`w-6 h-6 ${
+                            likes && likes.some(like =>
+                                typeof like === 'string' ? like === currentUser._id : like._id === currentUser._id
+                            ) ? 'fill-red-500' : ''
+                        }`} />
+                    </button>
 
-            <button
-                onClick={() => setShowComments(!showComments)}
-                className={`flex items-center gap-1 transition-colors cursor-pointer ${
-                    showComments ? 'text-blue-500' : 'text-gray-600 hover:text-blue-500'
-                }`}
-                title={showComments ? 'Hide comments' : 'View comments'}
-            >
-                <MessageCircle className={`w-4 h-4 ${showComments ? 'fill-blue-500' : ''}`}/>
-                {commentsCount > 0 && !showComments && (
-                    <span className="text-xs bg-blue-500 text-white rounded-full min-w-[16px] h-4 flex items-center justify-center px-1">
-                        {commentsCount > 99 ? '99+' : commentsCount}
-                    </span>
-                )}
-            </button>
+                    <button
+                        onClick={() => setShowComments(!showComments)}
+                        className='text-gray-700 hover:text-gray-500 transition-colors cursor-pointer'
+                        title={showComments ? 'Hide comments' : 'View comments'}
+                    >
+                        <MessageCircle className="w-6 h-6"/>
+                    </button>
 
-            <button
-                onClick={handleShareClick}
-                className='flex items-center gap-1 hover:text-green-500 transition-colors cursor-pointer'
-            >
-                <Share2 className="w-4 h-4"/>
-                <span>{sharesCount}</span>
-            </button>
+                    <button
+                        onClick={handleShareClick}
+                        className='text-gray-700 hover:text-gray-500 transition-colors cursor-pointer'
+                    >
+                        <Share2 className="w-6 h-6"/>
+                    </button>
+                </div>
 
-            <button
-                onClick={handleAddToStory}
-                className='flex items-center gap-1 hover:text-purple-500 transition-colors cursor-pointer ml-auto'
-                title="Add to Story"
-            >
-                <Plus className="w-4 h-4"/>
-                <span className="text-xs">Story</span>
-            </button>
+                <button
+                    onClick={handleAddToStory}
+                    className='text-gray-700 hover:text-gray-500 transition-colors cursor-pointer'
+                    title="Save"
+                >
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+                    </svg>
+                </button>
+            </div>
         </div>
 
         {/* Liked By Section - Instagram style */}
