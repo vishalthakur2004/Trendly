@@ -23,6 +23,8 @@ const InlineCommentsSection = ({ postId, initialCommentsCount = 0 }) => {
     const [replyingTo, setReplyingTo] = useState(null);
     const [replyText, setReplyText] = useState('');
     const [isLoaded, setIsLoaded] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isSubmittingReply, setIsSubmittingReply] = useState(false);
 
     // Load comments when component mounts or when toggling to show all
     useEffect(() => {
