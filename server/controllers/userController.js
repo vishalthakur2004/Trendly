@@ -338,14 +338,23 @@ export const getSuggestedConnections = async (req, res) => {
         // Add connection stats for each suggested user
         const suggestedUsersWithStats = await Promise.all(
             suggestedUsers.map(async (user) => {
-                const mutualConnections = await User.countDocuments({
+                const mutualConnectionsCount = await User.countDocuments({
                     _id: { $in: connectedUserIds },
                     connections: user._id
                 });
 
+                // Get actual mutual connections for display
+                const mutualConnectionsData = mutualConnectionsCount > 0
+                    ? await User.find({
+                        _id: { $in: connectedUserIds },
+                        connections: user._id
+                    }).select('full_name username').limit(5)
+                    : [];
+
                 return {
                     ...user.toObject(),
-                    mutualConnections,
+                    mutualConnections: mutualConnectionsData,
+                    mutualConnectionsCount,
                     connectionStatus: 'none' // none, pending, connected
                 };
             })
