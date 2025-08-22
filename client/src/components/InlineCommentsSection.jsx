@@ -354,8 +354,8 @@ const InlineCommentsSection = ({ postId, initialCommentsCount = 0 }) => {
             {/* Add Comment Form */}
             <form onSubmit={handleAddComment} className="mt-3">
                 <div className="flex gap-3">
-                    <img 
-                        src={currentUser?.profile_picture} 
+                    <img
+                        src={currentUser?.profile_picture}
                         alt={currentUser?.full_name}
                         className="w-6 h-6 rounded-full object-cover flex-shrink-0"
                     />
@@ -365,14 +365,25 @@ const InlineCommentsSection = ({ postId, initialCommentsCount = 0 }) => {
                             value={newComment}
                             onChange={(e) => setNewComment(e.target.value)}
                             placeholder="Add a comment..."
-                            className="flex-1 px-3 py-1 text-sm border border-gray-200 rounded-full focus:outline-none focus:ring-1 focus:ring-blue-500"
+                            className="flex-1 px-3 py-1 text-sm border border-gray-200 rounded-full focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:opacity-50"
+                            disabled={isSubmitting}
+                            onKeyPress={(e) => {
+                                if (e.key === 'Enter' && !e.shiftKey) {
+                                    e.preventDefault();
+                                    handleAddComment(e);
+                                }
+                            }}
                         />
-                        <button 
+                        <button
                             type="submit"
-                            disabled={!newComment.trim()}
+                            disabled={!newComment.trim() || isSubmitting}
                             className="text-blue-500 hover:text-blue-600 disabled:text-gray-400 disabled:cursor-not-allowed transition-colors"
                         >
-                            <Send className="w-4 h-4" />
+                            {isSubmitting ? (
+                                <div className="w-4 h-4 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin"></div>
+                            ) : (
+                                <Send className="w-4 h-4" />
+                            )}
                         </button>
                     </div>
                 </div>
