@@ -139,11 +139,10 @@ const PostCard = ({post}) => {
             </button>
         </div>
 
-        {/* Comments Section Modal */}
-        <CommentsSection
+        {/* Inline Comments Section */}
+        <InlineCommentsSection
             postId={post._id}
-            isOpen={showComments}
-            onClose={() => setShowComments(false)}
+            initialCommentsCount={commentsCount}
         />
 
         {/* Share Modal */}
