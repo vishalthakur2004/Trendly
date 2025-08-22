@@ -24,10 +24,30 @@ const NotificationPanel = () => {
     const [filter, setFilter] = useState('all'); // 'all' or 'unread'
 
     useEffect(() => {
-        if (isOpen && notifications.length === 0) {
-            loadNotifications();
+        if (isOpen) {
+            if (notifications.length === 0) {
+                loadNotifications();
+            } else {
+                // Auto-mark all notifications as read when panel opens
+                markAllNotificationsAsRead();
+            }
         }
     }, [isOpen]);
+
+    const markAllNotificationsAsRead = async () => {
+        try {
+            const token = await getToken();
+            const unreadNotifications = notifications.filter(n => !n.is_read);
+
+            if (unreadNotifications.length > 0) {
+                // Mark all as read without showing success message
+                await dispatch(markAllAsRead({ token }));
+            }
+        } catch (error) {
+            // Silently handle error - don't show toast for auto-marking
+            console.error('Failed to auto-mark notifications as read:', error);
+        }
+    };
 
     useEffect(() => {
         const handleClickOutside = (event) => {
