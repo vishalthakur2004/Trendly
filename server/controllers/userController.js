@@ -11,7 +11,24 @@ import { clerkClient } from "@clerk/express";
 export const getUserData = async (req, res) => {
     try {
         const { userId } = req.auth()
-        const user = await User.findById(userId)
+        let user = await User.findById(userId)
+
+        // Create development user if it doesn't exist
+        if(!user && userId === 'dev_user_123'){
+            user = new User({
+                _id: 'dev_user_123',
+                full_name: 'Dev User',
+                username: 'devuser',
+                email: 'dev@example.com',
+                bio: 'Development user for testing',
+                location: 'Development',
+                profile_picture: 'https://via.placeholder.com/150',
+                cover_picture: 'https://via.placeholder.com/400x200'
+            })
+            await user.save()
+            console.log('Created development user')
+        }
+
         if(!user){
             return res.json({success: false, message: "User not found"})
         }
