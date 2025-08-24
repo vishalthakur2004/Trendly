@@ -53,12 +53,14 @@ const Feed = () => {
                 </div>
 
                 {/* Posts Feed */}
-                <div className='space-y-0 lg:space-y-6 pb-20 lg:pb-6'>
+                <div className='space-y-0 lg:space-y-8 pb-20 lg:pb-8'>
                   {feeds.length > 0 ? (
-                    feeds.map((post) => (
+                    feeds.map((post, index) => (
                       <div
                         key={post._id}
-                        className='bg-white lg:rounded-xl lg:shadow-sm border-b border-gray-200 lg:border-none'
+                        className={`bg-white lg:rounded-xl lg:shadow-sm border-b border-gray-200 lg:border-none transition-all duration-300 hover:lg:shadow-md ${
+                          index === 0 ? 'lg:mt-0' : ''
+                        }`}
                       >
                         <PostCard post={post} />
                       </div>
