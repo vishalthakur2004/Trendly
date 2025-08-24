@@ -40,14 +40,14 @@ const ProfilePostsGrid = ({ posts }) => {
                     return (
                         <div
                             key={post._id}
-                            className="relative aspect-square bg-gray-100 cursor-pointer group overflow-hidden"
+                            className="relative aspect-square bg-gray-100 cursor-pointer group overflow-hidden profile-grid-item grid-item"
                             onClick={() => handlePostClick(post)}
                         >
                             {firstImage ? (
                                 <img
                                     src={firstImage}
                                     alt=""
-                                    className="w-full h-full object-cover transition-transform duration-200 group-hover:scale-105"
+                                    className="w-full h-full object-cover transition-transform duration-200 group-hover:scale-105 post-image"
                                 />
                             ) : (
                                 <div className="w-full h-full bg-gray-200 flex items-center justify-center">
