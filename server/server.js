@@ -44,6 +44,7 @@ app.use('/api/comment', commentRouter)
 app.use('/api/notification', notificationRouter)
 app.use('/api/call', callRouter)
 app.use('/api/group', groupRouter)
+app.use('/api/bookmark', bookmarkRouter)
 
 // Socket.io connection handling for calls and groups
 const connectedUsers = new Map(); // userId -> socketId
