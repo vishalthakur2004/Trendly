@@ -49,14 +49,14 @@ const Profile = () => {
 
   return user ? (
     <div className='relative h-full overflow-y-auto bg-white instagram-scroll'>
-      <div className='max-w-4xl mx-auto'>
+      <div className='max-w-4xl mx-auto px-4 sm:px-6 lg:px-8'>
         {/* Profile Header - Instagram Style */}
         <div className='border-b border-gray-200'>
           <UserProfileInfo user={user} posts={posts} profileId={profileId} setShowEdit={setShowEdit}/>
         </div>
 
         {/* Posts Grid - Instagram Style */}
-        <div className='p-4 sm:p-6'>
+        <div className='py-4 sm:py-6'>
           <ProfilePostsGrid posts={posts} />
         </div>
       </div>
