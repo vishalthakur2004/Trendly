@@ -8,6 +8,7 @@ import notificationsReducer from '../features/notifications/notificationsSlice.j
 import callsReducer from '../features/calls/callsSlice.js'
 import groupsReducer from '../features/groups/groupsSlice.js'
 import groupPostsReducer from '../features/groups/groupPostsSlice.js'
+import bookmarksReducer from '../features/bookmarks/bookmarksSlice.js'
 
 export const store = configureStore({
     reducer: {
