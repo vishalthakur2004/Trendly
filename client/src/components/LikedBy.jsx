@@ -343,7 +343,7 @@ const LikedBy = ({ likes = [], className = '' }) => {
         <div className={`space-y-2 ${className}`}>
             {/* Total likes count - prominent Instagram style */}
             <button
-                onClick={() => setShowAllLikes(true)}
+                onClick={() => setShowAllLikes(!showAllLikes)}
                 className="flex items-center gap-2 text-sm font-semibold text-gray-900 hover:text-gray-700 transition-colors group"
             >
                 <div className="flex items-center -space-x-1">
@@ -361,11 +361,14 @@ const LikedBy = ({ likes = [], className = '' }) => {
                     <span className="text-blue-600">• {connections.length} following</span>
                 )}
             </button>
-            
+
             {/* Instagram-style like text */}
             <div className="text-sm text-gray-700">
                 {renderLikeText()}
             </div>
+
+            {/* Expanded likes section */}
+            {renderExpandedLikes()}
         </div>
     );
 };
