@@ -68,8 +68,8 @@ const StoriesBar = () => {
     }
 
   return (
-    <div className='w-full max-w-lg mx-auto bg-white md:bg-transparent p-4 md:px-0 border-b border-gray-200 md:border-none'>
-        <div className='flex gap-4 overflow-x-auto no-scrollbar pb-2'>
+    <div className='w-full max-w-lg mx-auto lg:max-w-none bg-white lg:bg-transparent p-4 lg:px-0 border-b border-gray-200 lg:border-none'>
+        <div className='flex gap-3 sm:gap-4 overflow-x-auto no-scrollbar pb-2 px-1'>
             {/* Add Story Card - Your Story */}
             <div
                 onClick={()=>setShowModal(true)}

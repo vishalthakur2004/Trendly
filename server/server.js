@@ -15,6 +15,7 @@ import commentRouter from './routes/commentRoutes.js';
 import notificationRouter from './routes/notificationRoutes.js';
 import callRouter from './routes/callRoutes.js';
 import groupRouter from './routes/groupRoutes.js';
+import bookmarkRouter from './routes/bookmarkRoutes.js';
 
 const app = express();
 const server = createServer(app);
@@ -43,6 +44,7 @@ app.use('/api/comment', commentRouter)
 app.use('/api/notification', notificationRouter)
 app.use('/api/call', callRouter)
 app.use('/api/group', groupRouter)
+app.use('/api/bookmark', bookmarkRouter)
 
 // Socket.io connection handling for calls and groups
 const connectedUsers = new Map(); // userId -> socketId

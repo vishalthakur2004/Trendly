@@ -12,6 +12,7 @@ import Notifications from './pages/Notifications'
 import CallHistory from './pages/CallHistory'
 import Groups from './pages/Groups'
 import GroupDetail from './pages/GroupDetail'
+import Bookmarks from './pages/Bookmarks'
 import {useUser, useAuth} from '@clerk/clerk-react'
 import Layout from './pages/Layout'
 import toast, {Toaster} from 'react-hot-toast'
@@ -245,6 +246,7 @@ const App = () => {
           <Route path='call-history' element={<CallHistory/>}/>
           <Route path='groups' element={<Groups/>}/>
           <Route path='groups/:groupId' element={<GroupDetail/>}/>
+          <Route path='bookmarks' element={<Bookmarks/>}/>
         </Route>
       </Routes>
 

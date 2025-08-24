@@ -1,8 +1,8 @@
-import React, { useState } from 'react'
-import { BadgeCheck, Heart, MessageCircle, Share2, Plus } from 'lucide-react'
+import React, { useState, useEffect } from 'react'
+import { BadgeCheck, Heart, MessageCircle, Share2, Plus, Bookmark } from 'lucide-react'
 import moment from 'moment'
 import { useNavigate } from 'react-router-dom'
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { useAuth } from '@clerk/clerk-react'
 import api from '../api/axios'
 import toast from 'react-hot-toast'
@@ -11,9 +11,10 @@ import ShareModal from './ShareModal'
 import ShareToStoryModal from './ShareToStoryModal'
 import Avatar from './Avatar'
 import LikedBy from './LikedBy'
+import { toggleBookmark, updateBookmarkOptimistic } from '../features/bookmarks/bookmarksSlice'
 
 const PostCard = ({post}) => {
-
+    const dispatch = useDispatch();
     const postWithHashtags = post.content.replace(/(#\w+)/g, '<span class="text-blue-600">$1</span>')
     const [likes, setLikes] = useState(post.likes_count)
     const [commentsCount, setCommentsCount] = useState(post.comments_count || 0)
@@ -24,7 +25,12 @@ const PostCard = ({post}) => {
     const [showComments, setShowComments] = useState(false)
 
     const currentUser = useSelector((state) => state.user.value)
+    const bookmarkStatus = useSelector((state) => state.bookmarks.bookmarkStatus)
+    const toggleLoading = useSelector((state) => state.bookmarks.toggleLoading)
     const { getToken } = useAuth()
+
+    const isBookmarked = bookmarkStatus[post._id] || false
+    const isToggling = toggleLoading[post._id] || false
 
     const handleLike = async () => {
         if (isLiking) return; // Prevent double clicks
@@ -93,6 +99,28 @@ const PostCard = ({post}) => {
         setShowShareModal(true);
     }
 
+    const handleBookmark = async () => {
+        if (isToggling) return;
+
+        try {
+            // Optimistic update
+            dispatch(updateBookmarkOptimistic({
+                postId: post._id,
+                isBookmarked: !isBookmarked
+            }));
+
+            const token = await getToken();
+            await dispatch(toggleBookmark({
+                postId: post._id,
+                token
+            })).unwrap();
+
+            toast.success(isBookmarked ? 'Removed from bookmarks' : 'Added to bookmarks');
+        } catch (error) {
+            toast.error(error || 'Failed to update bookmark');
+        }
+    };
+
     const handleAddToStory = () => {
         setShowShareToStoryModal(true);
     }
@@ -100,9 +128,9 @@ const PostCard = ({post}) => {
     const navigate = useNavigate()
 
   return (
-    <div className='bg-white w-full max-w-lg mx-auto md:rounded-xl md:shadow-sm md:border border-gray-200'>
+    <div className='bg-white w-full max-w-lg mx-auto lg:max-w-none lg:rounded-xl lg:shadow-sm lg:border border-gray-200'>
         {/* User Info Header - Instagram Style */}
-        <div onClick={()=> navigate('/profile/' + post.user._id)} className='flex items-center justify-between p-3 cursor-pointer hover:bg-gray-50 transition-colors'>
+        <div onClick={()=> navigate('/profile/' + post.user._id)} className='flex items-center justify-between p-3 sm:p-4 cursor-pointer hover:bg-gray-50 transition-colors'>
             <div className="flex items-center gap-3">
                 <Avatar
                     src={post.user.profile_picture}
@@ -111,10 +139,10 @@ const PostCard = ({post}) => {
                 />
                 <div>
                     <div className='flex items-center gap-1'>
-                        <span className='font-semibold text-gray-900 text-sm'>{post.user.username}</span>
+                        <span className='font-semibold text-gray-900 text-sm sm:text-base'>{post.user.username}</span>
                         <BadgeCheck className='w-4 h-4 text-blue-500'/>
                     </div>
-                    <div className='text-gray-500 text-xs'>{moment(post.createdAt).fromNow()}</div>
+                    <div className='text-gray-500 text-xs sm:text-sm'>{moment(post.createdAt).fromNow()}</div>
                 </div>
             </div>
             <button className="p-2 hover:bg-gray-100 rounded-full transition-colors">
@@ -126,12 +154,12 @@ const PostCard = ({post}) => {
 
         {/* Post Image/Media - Instagram Style */}
         {post.image_urls.length > 0 && (
-            <div className='relative aspect-square bg-gray-100'>
+            <div className='relative aspect-square lg:aspect-auto lg:max-h-96 bg-gray-100'>
                 {post.image_urls.length === 1 ? (
-                    <img 
-                        src={post.image_urls[0]} 
-                        className='w-full h-full object-cover' 
-                        alt="" 
+                    <img
+                        src={post.image_urls[0]}
+                        className='w-full h-full object-cover lg:object-contain lg:bg-black'
+                        alt=""
                     />
                 ) : (
                     <div className='grid grid-cols-2 gap-0.5 h-full'>
@@ -155,7 +183,7 @@ const PostCard = ({post}) => {
         )}
 
         {/* Action Buttons - Instagram Style */}
-        <div className='p-3 space-y-3'>
+        <div className='p-3 sm:p-4 space-y-3'>
             <div className='flex items-center justify-between'>
                 <div className='flex items-center gap-4'>
                     <button
@@ -190,13 +218,14 @@ const PostCard = ({post}) => {
                 </div>
 
                 <button
-                    onClick={handleAddToStory}
-                    className='text-gray-900 hover:text-gray-600 transition-colors cursor-pointer'
-                    title="Save"
+                    onClick={handleBookmark}
+                    disabled={isToggling}
+                    className={`transition-colors cursor-pointer ${isToggling ? 'opacity-50 cursor-not-allowed' : ''} ${
+                        isBookmarked ? 'text-blue-600' : 'text-gray-900 hover:text-gray-600'
+                    }`}
+                    title={isBookmarked ? "Remove from bookmarks" : "Add to bookmarks"}
                 >
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
-                    </svg>
+                    <Bookmark className={`w-6 h-6 ${isBookmarked ? 'fill-blue-600' : ''}`} />
                 </button>
             </div>
 
@@ -210,7 +239,7 @@ const PostCard = ({post}) => {
 
             {/* Caption - Instagram Style */}
             {post.content && (
-                <div className='text-sm leading-relaxed'>
+                <div className='text-sm sm:text-base leading-relaxed'>
                     <span className='font-semibold text-gray-900 mr-1'>{post.user.username}</span>
                     <span className='text-gray-900' dangerouslySetInnerHTML={{__html: postWithHashtags}}/>
                 </div>
@@ -220,7 +249,7 @@ const PostCard = ({post}) => {
             {!showComments && commentsCount > 0 && (
                 <button
                     onClick={() => setShowComments(true)}
-                    className="text-sm text-gray-500 hover:text-gray-700 transition-colors"
+                    className="text-sm sm:text-base text-gray-500 hover:text-gray-700 transition-colors"
                 >
                     View all {commentsCount} comments
                 </button>
@@ -234,6 +263,7 @@ const PostCard = ({post}) => {
                     <InlineCommentsSection
                         postId={post._id}
                         initialCommentsCount={commentsCount}
+                        onHide={() => setShowComments(false)}
                     />
                 )}
             </div>
