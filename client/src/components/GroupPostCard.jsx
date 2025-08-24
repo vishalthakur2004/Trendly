@@ -329,6 +329,7 @@ const GroupPostCard = ({ post, groupId, canModerate = false }) => {
                     <InlineCommentsSection
                         postId={post._id}
                         initialCommentsCount={post.comments_count || 0}
+                        onHide={() => setShowComments(false)}
                     />
                 )}
             </div>
