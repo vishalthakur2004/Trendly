@@ -154,7 +154,7 @@ const PostCard = ({post}) => {
 
         {/* Post Image/Media - Instagram Style */}
         {post.image_urls.length > 0 && (
-            <div className='relative aspect-square lg:aspect-auto lg:max-h-96 bg-gray-100'>
+            <div className='relative w-full aspect-square lg:aspect-auto lg:max-h-96 bg-gray-100 overflow-hidden'>
                 {post.image_urls.length === 1 ? (
                     <img
                         src={post.image_urls[0]}
@@ -162,13 +162,13 @@ const PostCard = ({post}) => {
                         alt=""
                     />
                 ) : (
-                    <div className='grid grid-cols-2 gap-0.5 h-full'>
+                    <div className='grid grid-cols-2 gap-0.5 w-full h-full'>
                         {post.image_urls.slice(0, 4).map((img, index) => (
-                            <div key={index} className="relative">
-                                <img 
-                                    src={img} 
-                                    className='w-full h-full object-cover' 
-                                    alt="" 
+                            <div key={index} className="relative overflow-hidden">
+                                <img
+                                    src={img}
+                                    className='w-full h-full object-cover'
+                                    alt=""
                                 />
                                 {index === 3 && post.image_urls.length > 4 && (
                                     <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
