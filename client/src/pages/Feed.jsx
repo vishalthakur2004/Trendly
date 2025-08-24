@@ -10,7 +10,6 @@ import api from '../api/axios'
 import toast from 'react-hot-toast'
 
 const Feed = () => {
-
   const [feeds, setFeeds] = useState([])
   const [loading, setLoading] = useState(true)
   const {getToken} = useAuth()
@@ -37,65 +36,99 @@ const Feed = () => {
   },[])
 
   return !loading ? (
-    <div className='h-full overflow-y-scroll no-scrollbar bg-gray-50'>
-      {/* Responsive Grid Layout */}
-      <div className='min-h-screen'>
-        <div className='max-w-7xl mx-auto px-0 sm:px-4 lg:px-6 xl:px-8'>
-          <div className='grid grid-cols-1 lg:grid-cols-3 xl:grid-cols-4 gap-0 lg:gap-6'>
+    <div className='h-full overflow-y-auto bg-gray-50 lg:bg-white'>
+      {/* Instagram-style Layout */}
+      <div className='min-h-screen bg-gray-50 lg:bg-white'>
+        <div className='max-w-6xl mx-auto'>
+          <div className='flex justify-center'>
 
-            {/* Main Feed - Takes full width on mobile, 2/3 on large screens, 1/2 on xl */}
-            <div className='col-span-1 lg:col-span-2 xl:col-span-2'>
-              <div className='max-w-lg mx-auto lg:max-w-none'>
+            {/* Main Feed - Instagram Style */}
+            <div className='w-full max-w-lg lg:max-w-xl xl:max-w-2xl'>
 
-                {/* Stories Bar */}
-                <div className='bg-white border-b border-gray-200 lg:border-none lg:bg-transparent lg:pt-6 lg:mb-6 sticky top-0 z-10 lg:static lg:z-auto'>
-                  <StoriesBar />
-                </div>
+              {/* Stories Bar - Sticky on mobile */}
+              <div className='bg-white border-b border-gray-200 sticky top-0 z-20 lg:relative lg:border-0 lg:bg-transparent lg:pt-6'>
+                <StoriesBar />
+              </div>
 
-                {/* Posts Feed */}
-                <div className='space-y-0 lg:space-y-6 pb-20 lg:pb-6'>
-                  {feeds.length > 0 ? (
-                    feeds.map((post) => (
-                      <div
-                        key={post._id}
-                        className='bg-white lg:rounded-xl lg:shadow-sm border-b border-gray-200 lg:border-none'
-                      >
-                        <PostCard post={post} />
-                      </div>
-                    ))
-                  ) : (
-                    <div className='flex flex-col items-center justify-center py-16 px-4 bg-white lg:rounded-xl lg:shadow-sm'>
-                      <div className='w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mb-4'>
-                        <Home className='w-10 h-10 text-gray-400' />
-                      </div>
-                      <h2 className='text-lg font-semibold text-gray-900 mb-2'>No posts yet</h2>
-                      <p className='text-gray-600 text-center text-sm max-w-sm'>
-                        Follow people to see their posts in your feed, or create your first post to get started.
-                      </p>
+              {/* Posts Feed */}
+              <div className='pb-20 lg:pb-8'>
+                {feeds.length > 0 ? (
+                  feeds.map((post, index) => (
+                    <div
+                      key={post._id}
+                      className={`bg-white border-b border-gray-200 lg:border lg:rounded-lg lg:shadow-sm lg:mb-6 ${
+                        index === 0 ? 'lg:mt-6' : ''
+                      }`}
+                    >
+                      <PostCard post={post} />
                     </div>
-                  )}
-                </div>
+                  ))
+                ) : (
+                  <div className='flex flex-col items-center justify-center py-24 px-4 bg-white lg:rounded-lg lg:shadow-sm lg:mt-6'>
+                    <div className='w-24 h-24 border-2 border-gray-300 rounded-full flex items-center justify-center mb-6'>
+                      <Home className='w-12 h-12 text-gray-400' />
+                    </div>
+                    <h2 className='text-xl font-semibold text-gray-900 mb-3'>Welcome to your feed!</h2>
+                    <p className='text-gray-600 text-center text-sm max-w-sm leading-relaxed'>
+                      Follow people to see their posts here, or create your first post to get started.
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
 
-            {/* Right Sidebar - Hidden on mobile, shows on large screens */}
-            <div className='hidden lg:block col-span-1 xl:col-span-2'>
-              <div className='sticky top-6 space-y-6'>
+            {/* Right Sidebar - Desktop Only */}
+            <div className='hidden xl:block w-80 ml-8'>
+              <div className='sticky top-8 pt-6'>
 
-                {/* Recent Messages - Larger screens */}
-                <div className='xl:max-w-sm'>
+                {/* Recent Messages */}
+                <div className='mb-6'>
                   <RecentMessages />
                 </div>
 
-                {/* Additional sidebar content for larger screens */}
-                <div className='hidden xl:block xl:max-w-sm'>
-                  <div className='bg-white rounded-xl shadow-sm border border-gray-200 p-4'>
-                    <h3 className='font-semibold text-gray-900 mb-3'>Suggestions for you</h3>
-                    <p className='text-sm text-gray-600'>Discover new people and communities to follow.</p>
-                    <button className='mt-3 text-sm text-blue-600 hover:text-blue-700 font-medium'>
-                      See all suggestions
+                {/* Suggestions */}
+                <div className='bg-white rounded-lg border border-gray-200 p-4'>
+                  <div className='flex items-center justify-between mb-4'>
+                    <h3 className='font-semibold text-gray-900'>Suggestions for you</h3>
+                    <button className='text-sm text-blue-600 hover:text-blue-700 font-medium'>
+                      See All
                     </button>
                   </div>
+                  <p className='text-sm text-gray-600 mb-4'>
+                    Discover new people and communities to follow.
+                  </p>
+
+                  {/* Sample suggestion items */}
+                  <div className='space-y-3'>
+                    {[1, 2, 3].map((item) => (
+                      <div key={item} className='flex items-center justify-between'>
+                        <div className='flex items-center gap-3'>
+                          <div className='w-8 h-8 bg-gray-200 rounded-full'></div>
+                          <div>
+                            <div className='text-sm font-medium text-gray-900'>username{item}</div>
+                            <div className='text-xs text-gray-500'>Suggested for you</div>
+                          </div>
+                        </div>
+                        <button className='text-xs text-blue-600 font-medium hover:text-blue-700'>
+                          Follow
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Footer links */}
+                <div className='mt-6 text-xs text-gray-400 space-y-1'>
+                  <div className='flex flex-wrap gap-2'>
+                    <span>About</span>
+                    <span>Help</span>
+                    <span>Press</span>
+                    <span>API</span>
+                    <span>Jobs</span>
+                    <span>Privacy</span>
+                    <span>Terms</span>
+                  </div>
+                  <div>© 2024 PingUp</div>
                 </div>
               </div>
             </div>
