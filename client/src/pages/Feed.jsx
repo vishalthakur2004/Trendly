@@ -37,7 +37,7 @@ const Feed = () => {
   },[])
 
   return !loading ? (
-    <div className='h-full overflow-y-scroll no-scrollbar bg-gray-50'>
+    <div className='h-full overflow-y-auto scroll-smooth bg-gray-50'>
       {/* Responsive Grid Layout */}
       <div className='min-h-screen'>
         <div className='max-w-7xl mx-auto px-0 sm:px-4 lg:px-6 xl:px-8'>
