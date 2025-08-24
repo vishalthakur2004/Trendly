@@ -36,7 +36,7 @@ const Feed = () => {
   },[])
 
   return !loading ? (
-    <div className='h-full overflow-y-auto bg-gray-50 lg:bg-white'>
+    <div className='h-full overflow-y-auto bg-gray-50 lg:bg-white instagram-scroll feed-container'>
       {/* Instagram-style Layout */}
       <div className='min-h-screen bg-gray-50 lg:bg-white'>
         <div className='max-w-6xl mx-auto'>
