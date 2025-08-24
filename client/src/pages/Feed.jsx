@@ -58,12 +58,6 @@ const Feed = () => {
       {/* Desktop Right Sidebar */}
       <div className='hidden xl:block fixed top-20 right-8 w-80'>
         <div className='space-y-6'>
-          <div className='bg-white text-xs p-4 rounded-xl shadow-sm border border-gray-200'>
-            <h3 className='text-gray-800 font-semibold mb-3'>Sponsored</h3>
-            <img src={assets.sponsored_img} className='w-full h-32 object-cover rounded-lg mb-3' alt="" />
-            <p className='text-gray-600 font-medium mb-1'>Email marketing</p>
-            <p className='text-gray-400 text-xs leading-relaxed'>Supercharge your marketing with a powerful, easy-to-use platform built for results.</p>
-          </div>
           <RecentMessages />
         </div>
       </div>
