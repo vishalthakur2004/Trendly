@@ -1,8 +1,8 @@
-import React, { useState } from 'react'
-import { BadgeCheck, Heart, MessageCircle, Share2, Plus } from 'lucide-react'
+import React, { useState, useEffect } from 'react'
+import { BadgeCheck, Heart, MessageCircle, Share2, Plus, Bookmark } from 'lucide-react'
 import moment from 'moment'
 import { useNavigate } from 'react-router-dom'
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { useAuth } from '@clerk/clerk-react'
 import api from '../api/axios'
 import toast from 'react-hot-toast'
@@ -11,9 +11,10 @@ import ShareModal from './ShareModal'
 import ShareToStoryModal from './ShareToStoryModal'
 import Avatar from './Avatar'
 import LikedBy from './LikedBy'
+import { toggleBookmark, updateBookmarkOptimistic } from '../features/bookmarks/bookmarksSlice'
 
 const PostCard = ({post}) => {
-
+    const dispatch = useDispatch();
     const postWithHashtags = post.content.replace(/(#\w+)/g, '<span class="text-blue-600">$1</span>')
     const [likes, setLikes] = useState(post.likes_count)
     const [commentsCount, setCommentsCount] = useState(post.comments_count || 0)
@@ -24,7 +25,12 @@ const PostCard = ({post}) => {
     const [showComments, setShowComments] = useState(false)
 
     const currentUser = useSelector((state) => state.user.value)
+    const bookmarkStatus = useSelector((state) => state.bookmarks.bookmarkStatus)
+    const toggleLoading = useSelector((state) => state.bookmarks.toggleLoading)
     const { getToken } = useAuth()
+
+    const isBookmarked = bookmarkStatus[post._id] || false
+    const isToggling = toggleLoading[post._id] || false
 
     const handleLike = async () => {
         if (isLiking) return; // Prevent double clicks
@@ -92,6 +98,28 @@ const PostCard = ({post}) => {
     const handleShareClick = () => {
         setShowShareModal(true);
     }
+
+    const handleBookmark = async () => {
+        if (isToggling) return;
+
+        try {
+            // Optimistic update
+            dispatch(updateBookmarkOptimistic({
+                postId: post._id,
+                isBookmarked: !isBookmarked
+            }));
+
+            const token = await getToken();
+            await dispatch(toggleBookmark({
+                postId: post._id,
+                token
+            })).unwrap();
+
+            toast.success(isBookmarked ? 'Removed from bookmarks' : 'Added to bookmarks');
+        } catch (error) {
+            toast.error(error || 'Failed to update bookmark');
+        }
+    };
 
     const handleAddToStory = () => {
         setShowShareToStoryModal(true);
@@ -190,13 +218,14 @@ const PostCard = ({post}) => {
                 </div>
 
                 <button
-                    onClick={handleAddToStory}
-                    className='text-gray-900 hover:text-gray-600 transition-colors cursor-pointer'
-                    title="Save"
+                    onClick={handleBookmark}
+                    disabled={isToggling}
+                    className={`transition-colors cursor-pointer ${isToggling ? 'opacity-50 cursor-not-allowed' : ''} ${
+                        isBookmarked ? 'text-blue-600' : 'text-gray-900 hover:text-gray-600'
+                    }`}
+                    title={isBookmarked ? "Remove from bookmarks" : "Add to bookmarks"}
                 >
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
-                    </svg>
+                    <Bookmark className={`w-6 h-6 ${isBookmarked ? 'fill-blue-600' : ''}`} />
                 </button>
             </div>
 
