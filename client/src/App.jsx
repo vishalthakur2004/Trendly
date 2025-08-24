@@ -246,6 +246,7 @@ const App = () => {
           <Route path='call-history' element={<CallHistory/>}/>
           <Route path='groups' element={<Groups/>}/>
           <Route path='groups/:groupId' element={<GroupDetail/>}/>
+          <Route path='bookmarks' element={<Bookmarks/>}/>
         </Route>
       </Routes>
 
