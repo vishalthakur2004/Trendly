@@ -234,6 +234,7 @@ const PostCard = ({post}) => {
                     <InlineCommentsSection
                         postId={post._id}
                         initialCommentsCount={commentsCount}
+                        onHide={() => setShowComments(false)}
                     />
                 )}
             </div>
