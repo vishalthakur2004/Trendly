@@ -43,10 +43,10 @@ const Feed = () => {
           <div className='flex justify-center'>
 
             {/* Main Feed - Instagram Style */}
-            <div className='w-full max-w-lg lg:max-w-xl xl:max-w-2xl'>
+            <div className='w-full max-w-md sm:max-w-lg lg:max-w-xl xl:max-w-2xl mx-auto lg:mx-0'>
 
               {/* Stories Bar - Sticky on mobile */}
-              <div className='bg-white border-b border-gray-200 sticky top-0 z-20 lg:relative lg:border-0 lg:bg-transparent lg:pt-6'>
+              <div className='bg-white border-b border-gray-200 sticky top-0 z-20 lg:relative lg:border-0 lg:bg-transparent lg:pt-6 -mx-4 px-4 sm:mx-0 sm:px-0'>
                 <StoriesBar />
               </div>
 
