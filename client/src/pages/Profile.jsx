@@ -23,6 +23,7 @@ const Profile = () => {
   const [user, setUser] = useState(null)
   const [posts, setPosts] = useState([])
   const [showEdit, setShowEdit] = useState(false)
+  const [viewMode, setViewMode] = useState('grid') // 'grid' or 'list'
 
   const fetchUser = async (profileId) => {
     const token = await getToken()
