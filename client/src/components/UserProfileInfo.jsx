@@ -49,7 +49,7 @@ const UserProfileInfo = ({user, posts, profileId, setShowEdit}) => {
     }
   }
   return (
-    <div className='bg-white p-4 sm:p-6 lg:p-8'>
+    <div className='bg-white p-4 sm:p-6 lg:p-8 border-b border-gray-100'>
       <div className='flex flex-col sm:flex-row items-start gap-6 sm:gap-8'>
 
         {/* Profile Picture */}
