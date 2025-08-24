@@ -22,6 +22,7 @@ export const menuItemsData = [
     { to: '/call-history', label: 'Call History', Icon: PhoneCall },
     { to: '/connections', label: 'Connections', Icon: Users },
     { to: '/discover', label: 'Discover', Icon: Search },
+    { to: '/bookmarks', label: 'Bookmarks', Icon: Bookmark },
     { to: '/notifications', label: 'Notifications', Icon: Bell, showBadge: true },
     { to: '/profile', label: 'Profile', Icon: UserIcon },
 ];
