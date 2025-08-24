@@ -5,12 +5,14 @@ import { useEffect } from 'react'
 import Loading from '../components/Loading'
 import UserProfileInfo from '../components/UserProfileInfo'
 import PostCard from '../components/PostCard'
+import ProfilePostsGrid from '../components/ProfilePostsGrid'
 import moment from 'moment'
 import ProfileModal from '../components/ProfileModal'
 import { useAuth } from '@clerk/clerk-react'
 import api from '../api/axios'
 import toast from 'react-hot-toast'
 import { useSelector } from 'react-redux'
+import { Grid3x3, List } from 'lucide-react'
 
 const Profile = () => {
 
