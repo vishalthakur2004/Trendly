@@ -12,7 +12,7 @@ import {
     updateCommentLike
 } from '../features/comments/commentsSlice';
 
-const InlineCommentsSection = ({ postId, initialCommentsCount = 0 }) => {
+const InlineCommentsSection = ({ postId, initialCommentsCount = 0, onHide }) => {
     const dispatch = useDispatch();
     const { getToken } = useAuth();
     const currentUser = useSelector((state) => state.user.value);
@@ -305,26 +305,38 @@ const InlineCommentsSection = ({ postId, initialCommentsCount = 0 }) => {
 
     return (
         <div className="mt-2">
-            {/* Comments Count & View All Link */}
-            {totalComments > 0 && (
-                <div className="mb-2">
-                    {hasMoreComments ? (
-                        <button 
-                            onClick={() => setShowAllComments(true)}
-                            className="text-sm text-gray-500 hover:text-gray-700"
-                        >
-                            View all {totalComments} comments
-                        </button>
-                    ) : showAllComments && comments.length > 3 && (
-                        <button 
-                            onClick={() => setShowAllComments(false)}
-                            className="text-sm text-gray-500 hover:text-gray-700"
-                        >
-                            Hide comments
-                        </button>
+            {/* Comments Header with Hide Option */}
+            <div className="flex items-center justify-between mb-2">
+                <div>
+                    {totalComments > 0 && (
+                        <div>
+                            {hasMoreComments ? (
+                                <button
+                                    onClick={() => setShowAllComments(true)}
+                                    className="text-sm text-gray-500 hover:text-gray-700"
+                                >
+                                    View all {totalComments} comments
+                                </button>
+                            ) : showAllComments && comments.length > 3 && (
+                                <button
+                                    onClick={() => setShowAllComments(false)}
+                                    className="text-sm text-gray-500 hover:text-gray-700"
+                                >
+                                    Hide comments
+                                </button>
+                            )}
+                        </div>
                     )}
                 </div>
-            )}
+                {onHide && (
+                    <button
+                        onClick={onHide}
+                        className="text-sm text-gray-500 hover:text-gray-700 font-medium"
+                    >
+                        Hide
+                    </button>
+                )}
+            </div>
             
             {/* Comments List */}
             {commentsState?.loading && !comments.length ? (
