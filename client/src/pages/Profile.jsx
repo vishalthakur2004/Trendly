@@ -48,7 +48,7 @@ const Profile = () => {
   },[profileId, currentUser])
 
   return user ? (
-    <div className='relative h-full overflow-y-auto bg-white'>
+    <div className='relative h-full overflow-y-auto bg-white instagram-scroll'>
       <div className='max-w-4xl mx-auto'>
         {/* Profile Header - Instagram Style */}
         <div className='border-b border-gray-200'>
