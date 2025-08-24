@@ -27,13 +27,6 @@ const Sidebar = ({sidebarOpen, setSidebarOpen}) => {
             </Link>
       </div>
 
-        {/* Notification Section */}
-        <div className='w-full border-t border-gray-200 p-4 px-7'>
-            <div className='flex items-center justify-between mb-3'>
-                <h3 className='text-sm font-medium text-gray-700'>Notifications</h3>
-                <NotificationPanel />
-            </div>
-        </div>
 
         {/* Profile Section */}
         <div className='w-full border-t border-gray-200 p-4 px-7 flex items-center justify-between'>
