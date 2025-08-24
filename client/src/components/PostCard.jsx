@@ -128,7 +128,7 @@ const PostCard = ({post}) => {
     const navigate = useNavigate()
 
   return (
-    <div className='bg-white w-full max-w-lg mx-auto lg:max-w-none lg:rounded-xl lg:shadow-sm lg:border border-gray-200'>
+    <div className='bg-white w-full max-w-lg mx-auto lg:max-w-none lg:rounded-lg lg:shadow-sm lg:border border-gray-200 overflow-hidden'>
         {/* User Info Header - Instagram Style */}
         <div onClick={()=> navigate('/profile/' + post.user._id)} className='flex items-center justify-between p-3 sm:p-4 cursor-pointer hover:bg-gray-50 transition-colors'>
             <div className="flex items-center gap-3">
@@ -154,12 +154,13 @@ const PostCard = ({post}) => {
 
         {/* Post Image/Media - Instagram Style */}
         {post.image_urls.length > 0 && (
-            <div className='relative aspect-square lg:aspect-auto lg:max-h-96 bg-gray-100'>
+            <div className='relative aspect-square sm:aspect-auto sm:max-h-[400px] lg:max-h-[500px] bg-gray-100'>
                 {post.image_urls.length === 1 ? (
                     <img
                         src={post.image_urls[0]}
-                        className='w-full h-full object-cover lg:object-contain lg:bg-black'
+                        className='w-full h-full object-cover sm:object-contain sm:bg-black post-image'
                         alt=""
+                        loading="lazy"
                     />
                 ) : (
                     <div className='grid grid-cols-2 gap-0.5 h-full'>
